@@ -1,0 +1,8 @@
+[submodule "zsh-users_zsh-completions"]
+	path = zsh-users_zsh-completions
+	url = https://github.com/zsh-users/zsh-completions.git
+	branch = master
+[submodule "zchee_zsh-completions"]
+	path = zchee_zsh-completions
+	url = https://github.com/zchee/zsh-completions.git
+	branch = master
