@@ -6,9 +6,9 @@ git submodule update --recursive --remote
 
 cp -Lrf \
 "$cwd/zchee_zsh-completions/src/zsh/_"* \
-"$cwd/"
+"$cwd/src/"
 
 cp -Lrf \
 "$cwd/zsh-users_zsh-completions/src/_"* \
-"$cwd/"
+"$cwd/src/"
 
