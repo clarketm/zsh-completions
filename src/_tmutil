@@ -1,0 +1,102 @@
+#compdef tmutil
+# zsh completion for OSX's tmutil
+
+# notes:
+# - cannot use 'tmutil machinedirectory' for 'calculatedrift' as it will block
+#   indefinitely if machinedirectory not available
+# - cannot use 'tmutil listbackups' for 'delete', 'compare' and  'uniquesize'
+#   as it too will block indefinitely if machinedirectory not available
+# - cannot get list of excluded path for 'isexcluded' or 'removeexclusion'
+
+local -a _tmutil_verbs
+
+_tmutil_verbs=(
+'addexclusion:configure an exclusion for a file, directory or volume'
+'associatedisk:bind snapshot volume directory to specified local disk'
+'calculatedrift:analyze snapshots and determine amount of change between each.'
+'compare:perform a backup diff'
+'delete:delete one or more snapshots in an arbitrary machine directory'
+'destinationinfo:print information about destinations currently configured'
+'disable:turn off automatic backups'
+'disablelocal:turn off local time machine snapshots'
+'enable:turn on automatic backups'
+'enablelocal:turn on local time machine snapshots'
+'help:print extended usage for given verb'
+'inheritbackup:claim a machine directory or sparsebundle for current machine'
+'isexcluded:determine if file, directory or volume are excluded'
+'latestbackup:print the path to the most recent snapshot for this computer'
+'listbackups:print paths for all completed snapshots'
+'machinedirectory:print the path to the current machine directory'
+'removedestination:remove the destination with the specified unique identifier'
+'removeexclusion:remove exclusion'
+'restore:restore item(s) to destination'
+'setdestination:configure local HFS+ volume or AFP share as a backup destination'
+'snapshot:create new local time machine snapshot'
+'startbackup:perform a standard backup'
+'stopbackup:cancel a backup currently in progress'
+'uniquesize:analyze specific path and determine its unique size'
+'version:print version information'
+)
+
+_arguments '*:: :->subcmds'
+
+if (( CURRENT == 1 )); then
+	_describe -t commands "tmutil verbs" _tmutil_verbs
+fi
+
+case "$words[1]" in
+	help)
+		_describe -t commands "tmutil verbs" _tmutil_verbs
+		_arguments '*:: :->subcmds'
+		;;
+	startbackup)
+		_arguments \
+			'(-b --block)'{-b,--block}'[wait (block) until the backup is finished before exiting]' \
+			'(-r --rotation)'{-r,--rotation}'[allow automatic destination rotation during the backup]' \
+			'(-d --destination)'{-d,--destination}'[perform the backup to the destination corresponding to the specified ID]:destination:_files -/'
+		;;
+	restore)
+		_tmutil_options () { _arguments '-v[verbose]: ' }
+		_alternative 'tmutil_options: :_tmutil_options' 'files:item:_files'
+		;;
+	compare)
+		_arguments \
+			'-a[compare all supported metadata]' \
+			'-@[compare extended attributes]' \
+			'-e[compare ACLs]' \
+			'-s[compare sizes]' \
+			'-m[compare file modes]' \
+			'-u[compare UIDs]' \
+			'-g[compare GIDs]' \
+			'-t[compare modification times]' \
+			'-d[compare file data forks]' \
+			'-D+[limit traversal depth to depth levels from the beginning of iteration]:level depth' \
+			'-E[do not take exclusions into account when comparing items inside volumes]' \
+			'*-I+[ignore paths with a path component equal to name during iteration]:path component' \
+			'-X[print output in XML property list format]' \
+			'*: :_files'
+		;;
+	setdestination)
+		_arguments \
+			'-a[add to list of destinations, otherwise replace current]' \
+			'-p[enter APF password at a non-echoing interactive prompt]' \
+			'*:destination:_files -/'
+		;;
+	destinationinfo) _arguments '-X:print output in XML property list format';;
+	removedestination) _arguments '*:destination:_files -/';;
+	addexclusion)
+		_tmutil_options () { _arguments '-p[add a fixed-path exclusion]: ' }
+		_alternative 'tmutil_options: :_tmutil_options' 'files:item:_files'
+		;;
+	removeexclusion)
+		_tmutil_options () { _arguments '-p[remove a fixed-path exclusion]: ' }
+		_alternative 'tmutil_options: :_tmutil_options' 'files:item:_files'
+		;;
+	isexcluded)
+		_tmutil_options () { _arguments '-X[print output in XML property list format]: ' }
+		_alternative 'tmutil_options: :_tmutil_options' 'files:item:_files'
+		;;
+	associatedisk)
+		_arguments '-a[associate all snapshot volumes in same machine directory that match given identity]'
+		;;
+esac

@@ -1,0 +1,87 @@
+#compdef systemsetup
+# zsh completion for OSX's systemsetup
+
+local -a _systemsetup_verbs
+
+_systemsetup_verbs=(
+'-getdate:Display current date.'
+'-setdate:Set current date to <mm:dd:yy>.'
+'-gettime:Display current time.'
+'-settime:Set current time to <hh:mm:ss>.'
+'-gettimezone:Display current time zone.'
+'-settimezone:Set current time zone to <timezone>. Use "-listtimezones" to list time zones.'
+'-listtimezones:List time zones supported by this machine.'
+'-getusingnetworktime:Display whether network time is on or off.'
+'-setusingnetworktime:Set using network time to either <on> or <off>.'
+'-getnetworktimeserver:Display network time server.'
+'-setnetworktimeserver:Set network time server to <timeserver>.'
+'-getsleep:Display amount of idle time until computer, display and hard disk sleep.'
+'-setsleep:Set amount of idle time until computer, display and hard disk sleep to <minutes>. Specify "Never" or "Off" for never.'
+'-getcomputersleep:Display amount of idle time until computer sleeps.'
+'-setcomputersleep:Set amount of idle time until compputer sleeps to <minutes>. Specify "Never" or "Off" for never.'
+'-getdisplaysleep:Display amount of idle time until display sleeps.'
+'-setdisplaysleep:Set amount of idle time until display sleeps to <minutes>. Specify "Never" or "Off" for never.'
+'-getharddisksleep:Display amount of idle time until hard disk sleeps.'
+'-setharddisksleep:Set amount of idle time until hard disk sleeps to <minutes>. Specify "Never" or "Off" for never.'
+'-getwakeonmodem:Display whether wake on modem is on or off.'
+'-setwakeonmodem:Set wake on modem to either <on> or <off>.'
+'-getwakeonnetworkaccess:Display whether wake on network access is on or off.'
+'-setwakeonnetworkaccess:Set wake on network access to either <on> or <off>.'
+'-getrestartpowerfailure:Display whether restart on power failure is on or off.'
+'-setrestartpowerfailure:Set restart on power failure to either <on> or <off>.'
+'-getrestartfreeze:Display whether restart on freeze is on or off.'
+'-setrestartfreeze:Set restart on freeze to either <on> or <off>.'
+'-getallowpowerbuttontosleepcomputer:Display whether the power button is able to sleep the computer.'
+'-setallowpowerbuttontosleepcomputer:Enable or disable whether the power button can sleep the computer.'
+'-getremotelogin:Display whether remote login is on or off.'
+'-setremotelogin:Set remote login to either <on> or <off>. Use "systemsetup -f -setremotelogin off" to suppress prompting when turning remote login off.'
+'-getremoteappleevents:Display whether remote apple events are on or off.'
+'-setremoteappleevents:Set remote apple events to either <on> or <off>.'
+'-getcomputername:Display computer name.'
+'-setcomputername:Set computer name to <computername>.'
+'-getlocalsubnetname:Display local subnet name.'
+'-setlocalsubnetname:Set local subnet name to <name>.'
+'-getstartupdisk:Display current startup disk.'
+'-setstartupdisk:Set current startup disk to <disk>.'
+'-liststartupdisks:List startup disks on this machine.'
+'-getwaitforstartupafterpowerfailure:Get the number of seconds after which the computer will start up after a power failure.'
+'-setwaitforstartupafterpowerfailure:Set the number of seconds after which the computer will start up after a power failure. The <seconds> value must be a multiple of 30 seconds.'
+'-getdisablekeyboardwhenenclosurelockisengaged:Get whether or not the keyboard should be disabled when the X Serve enclosure lock is engaged.'
+'-setdisablekeyboardwhenenclosurelockisengaged:Set whether or not the keyboard should be disabled when the X Serve enclosure lock is engaged.'
+'-version:Display version of systemsetup tool.'
+'-help:Display help.'
+'-printCommands:Display commands.'
+'-f:Suppress prompting when turning remote login off.'
+)
+
+_arguments '*:: :->subcmds'
+
+if (( CURRENT == 1 )); then
+	_describe -t commands "systemsetup verbs" _systemsetup_verbs
+fi
+
+case "$words[1]" in
+	-setdate) _arguments '*::mm\:dd\:yy:';;
+	-settime) _arguments '*::hh\:mm\:ss:';;
+	-settimezone) _arguments '*::time zone:(`sudo systemsetup -listtimezones| awk "NR>1"`)';;
+	-setusingnetworktime) _arguments '*::network time:(on off)';;
+	-setnetworktimeserver) _arguments '*::timeserver:';;
+	-setsleep) _arguments '*::sleep:(minutes Never Off)';;
+	-setcomputersleep) _arguments '*::sleep time:(minutes Never Off)';;
+	-setdisplaysleep) _arguments '*::sleep time:(minutes Never Off)';;
+	-setharddisksleep) _arguments '*::sleep time:(minutes Never Off)';;
+	-setwakeonmodem) _arguments '*::modem wake:(on off)';;
+	-setwakeonnetworkaccess) _arguments '*::network wake:(on off)';;
+	-setrestartpowerfailure) _arguments '*::restart on power failure:(on off)';;
+	-setrestartfreeze) _arguments '*::restart on freeze:(on off)';;
+	-setallpowerbuttontosleepcomputer) _arguments '*::power button sleep:(on off)';;
+	-setremotelogin) _arguments '*::remote login:(on off)';;
+	-f) _arguments '-setremotelogin:remote login:(on off)';;
+	-setremoteappleevents) _arguments '*::remote apple events:(on off)';;
+	-setcomputername) _arguments '*::computer name:';;
+	-setlocalsubnetname) _arguments '*::subnet name:';;
+	-setstartupdisk) _arguments '*::startup disk:';;
+	-setwaitforstartupafterpowerfailure) _arguments '*::seconds (multiple of 30):';;
+	-setdisablekeyboardwhenenclosurelockisengaged) _arguments '*::disable:(yes no)';;
+	destinationinfo) _arguments '-X:print output in XML property list format';;
+esac

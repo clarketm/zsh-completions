@@ -1,0 +1,46 @@
+#compdef xattr
+# zsh completion for OSX's xattr
+#
+# usage: xattr [-l] [-r] [-s] [-v] [-x] file [file ...]
+#        xattr -p [-l] [-r] [-s] [-v] [-x] attr_name file [file ...]
+#        xattr -w [-r] [-s] [-x] attr_name attr_value file [file ...]
+#        xattr -d [-r] [-s] attr_name file [file ...]
+#        xattr -c [-r] [-s] file [file ...]
+#
+# The first form lists the names of all xattrs on the given file(s).
+# The second form (-p) prints the value of the xattr attr_name.
+# The third form (-w) sets the value of the xattr attr_name to the string attr_value.
+# The fourth form (-d) deletes the xattr attr_name.
+# The fifth form (-c) deletes (clears) all xattrs.
+#
+# options:
+#   -h: print this help
+#   -l: print long format (attr_name: attr_value and hex output has offsets and
+#       ascii representation)
+#   -r: act recursively
+#   -s: act on the symbolic link itself rather than what the link points to
+#   -v: also print filename (automatic with -r and with multiple files)
+#   -x: attr_value is represented as a hex string for input and output
+
+local extra
+local -a _xattr_options
+
+_xattr_options=(
+'(-w -d -c)-p[prints the value of the xattr attr_name]'
+'(-p -d -c -v)-w[sets the value of the xattr attr_name to the string attr_value]'
+'(-p -w -c -l -v -x)-d[deletes the xattr attr_name]'
+'(-p -w -d -l -v -x)-c[deletes (clears) all xattrs]'
+'(- *)-h[print help]'
+'-l[print long format (attr_name: attr_value and hex output has offsets and ascii representation)]'
+'-r[act recursively]'
+'-s[act on the symbolic link itself rather than what the link points to]'
+'-v[also print filename (automatic with -r and with multiple files)]'
+'-x[attr_value is represented as a hex string for input and output]'
+)
+
+if [[ $words =~ 'p|d' ]]; then
+	[[ ${words[$(($#words-1))]} =~ "^-" ]] && extra='(-)*:attribut name'
+elif [[ $words =~ 'w' ]]; then
+	[[ ${words[$(($#words-2))]} =~ "^-" || ${words[$(($#words-1))]} =~ "^-" ]] && extra=(':attribut name' '(-):attribut value')
+fi
+_arguments -s $_xattr_options ${extra:-'(-)*: :_files'}
