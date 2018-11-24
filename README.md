@@ -16,7 +16,7 @@ This project aggregates zsh completions from:
 
 ### Using zsh frameworks
 
-#### [antigen](https://github.com/clarketm/antigen)
+#### [antigen](https://github.com/zsh-users/antigen)
 
 Add `antigen bundle clarketm/zsh-completions` to your `~/.zshrc`.
 
