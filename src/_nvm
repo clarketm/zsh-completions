@@ -71,6 +71,7 @@ __nvm_aliases(){
 }
 
 __nvm_versions(){
+  test command -v nvm_ls >/dev/null 2>&1 || nvm >/dev/null 2>&1 # lazy-loaded nvm
   echo "$(nvm_ls) $(__nvm_aliases)"
 }
 
