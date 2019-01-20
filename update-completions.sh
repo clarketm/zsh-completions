@@ -17,3 +17,6 @@ cp -Lrf \
 "$cwd/zsh-users_zsh-completions/src/_"* \
 "$cwd/src/"
 
+cp -Lrf \
+"$cwd/override/_"* \
+"$cwd/src/"
