@@ -1,2 +1,6 @@
 # zsh word code files
 *.zwc
+
+# IDE
+.idea
+*.iml
