@@ -21,4 +21,4 @@ cp -Lrf \
     "$cwd/override/_"* \
     "$cwd/src/"
 
-git commit -am "$(date +%F)" && git push --tags origin
+git commit -am "$(date +%F)" && git push --tags origin master
