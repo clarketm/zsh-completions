@@ -2,6 +2,7 @@
 
 cwd=$(cd "$(dirname "$0")" && pwd)
 
+git submodule sync --recursive
 git submodule update --recursive --remote
 
 cp -Lrf \
