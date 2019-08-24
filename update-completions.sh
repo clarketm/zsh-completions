@@ -22,4 +22,6 @@ cp -Lrf \
     "$cwd/custom/_"* \
     "$cwd/src/"
 
-git commit -am "$(date +%F)" && git push --tags origin master
+if [ "$1" != "--dry-run" ]; then
+	git commit -am "$(date +%F)" && git push --tags origin master
+fi
