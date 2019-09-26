@@ -23,5 +23,5 @@ cp -Lrf \
     "$cwd/src/"
 
 if [ "$1" != "--dry-run" ]; then
-	git commit -am "$(date +%F)" && git push --tags origin master
+	git add . && git commit -m "$(date +%F)" && git push --tags origin master
 fi
