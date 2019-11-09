@@ -7,7 +7,7 @@ This project aggregates zsh completions from:
 1. [zsh-users/zsh-completions](https://github.com/zsh-users/zsh-completions)
 2. [zchee/zsh-completions](https://github.com/zchee/zsh-completions)
 3. [nilsonholger/osx-zsh-completions](https://github.com/nilsonholger/osx-zsh-completions)
-4. and *various* other custom or third-party sources.
+4. and *various* other [custom](/custom) or third-party sources.
 
 *This projects aims at gathering/developing new completion scripts that are not available in Zsh yet. The scripts may be contributed to the Zsh project when stable enough.*
 
