@@ -1,0 +1,196 @@
+#compdef _gh gh
+
+
+function _gh {
+  local -a commands
+
+  _arguments -C \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:' \
+    '--version[Show gh version]' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "help:Help about any command"
+      "issue:Create and view issues"
+      "pr:Create, view, and checkout pull requests"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  help)
+    _gh_help
+    ;;
+  issue)
+    _gh_issue
+    ;;
+  pr)
+    _gh_pr
+    ;;
+  esac
+}
+
+function _gh_help {
+  _arguments \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
+
+function _gh_issue {
+  local -a commands
+
+  _arguments -C \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "create:Create a new issue"
+      "list:List and filter issues in this repository"
+      "status:Show status of relevant issues"
+      "view:View an issue in the browser"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  create)
+    _gh_issue_create
+    ;;
+  list)
+    _gh_issue_list
+    ;;
+  status)
+    _gh_issue_status
+    ;;
+  view)
+    _gh_issue_view
+    ;;
+  esac
+}
+
+function _gh_issue_create {
+  _arguments \
+    '(-b --body)'{-b,--body}'[Supply a body. Will prompt for one otherwise.]:' \
+    '(-t --title)'{-t,--title}'[Supply a title. Will prompt for one otherwise.]:' \
+    '(-w --web)'{-w,--web}'[Open the browser to create an issue]' \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
+function _gh_issue_list {
+  _arguments \
+    '(-a --assignee)'{-a,--assignee}'[Filter by assignee]:' \
+    '(*-l *--label)'{\*-l,\*--label}'[Filter by label]:' \
+    '(-L --limit)'{-L,--limit}'[Maximum number of issues to fetch]:' \
+    '(-s --state)'{-s,--state}'[Filter by state: {open|closed|all}]:' \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
+function _gh_issue_status {
+  _arguments \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
+function _gh_issue_view {
+  _arguments \
+    '(-p --preview)'{-p,--preview}'[Display preview of issue content]' \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
+
+function _gh_pr {
+  local -a commands
+
+  _arguments -C \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "checkout:Check out a pull request in Git"
+      "create:Create a pull request"
+      "list:List and filter pull requests in this repository"
+      "status:Show status of relevant pull requests"
+      "view:View a pull request in the browser"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  checkout)
+    _gh_pr_checkout
+    ;;
+  create)
+    _gh_pr_create
+    ;;
+  list)
+    _gh_pr_list
+    ;;
+  status)
+    _gh_pr_status
+    ;;
+  view)
+    _gh_pr_view
+    ;;
+  esac
+}
+
+function _gh_pr_checkout {
+  _arguments \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
+function _gh_pr_create {
+  _arguments \
+    '(-B --base)'{-B,--base}'[The branch into which you want your code merged]:' \
+    '(-b --body)'{-b,--body}'[Supply a body. Will prompt for one otherwise.]:' \
+    '(-d --draft)'{-d,--draft}'[Mark pull request as a draft]' \
+    '(-t --title)'{-t,--title}'[Supply a title. Will prompt for one otherwise.]:' \
+    '(-w --web)'{-w,--web}'[Open the web browser to create a pull request]' \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
+function _gh_pr_list {
+  _arguments \
+    '(-a --assignee)'{-a,--assignee}'[Filter by assignee]:' \
+    '(-B --base)'{-B,--base}'[Filter by base branch]:' \
+    '(*-l *--label)'{\*-l,\*--label}'[Filter by label]:' \
+    '(-L --limit)'{-L,--limit}'[Maximum number of items to fetch]:' \
+    '(-s --state)'{-s,--state}'[Filter by state: {open|closed|merged|all}]:' \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
+function _gh_pr_status {
+  _arguments \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
+function _gh_pr_view {
+  _arguments \
+    '(-p --preview)'{-p,--preview}'[Display preview of pull request content]' \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
