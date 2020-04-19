@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>clarketm.zsh-completions</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/local/bin/bash</string>
+		<string>-c</string>
+		<string>/Users/clarketm/.zsh/plugins/zsh-completions/update-completions.sh</string>
+	</array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin</string>
+    </dict>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/tmp/clarketm.zsh-completions.stderr</string>
+	<key>StandardOutPath</key>
+	<string>/tmp/clarketm.zsh-completions.stdout</string>
+	<key>StartCalendarInterval</key>
+	<array>
+		<dict>
+			<key>Hour</key>
+			<integer>22</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+	</array>
+	<key>WorkingDirectory</key>
+	<string>/Users/clarketm/.zsh/plugins/zsh-completions</string>
+</dict>
+</plist>
