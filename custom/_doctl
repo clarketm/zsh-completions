@@ -720,9 +720,114 @@ _doctl_balance()
     noun_aliases=()
 }
 
+_doctl_billing-history_list()
+{
+    last_command="doctl_billing-history_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--format=")
+    local_nonpersistent_flags+=("--format=")
+    flags+=("--no-header")
+    local_nonpersistent_flags+=("--no-header")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_billing-history()
+{
+    last_command="doctl_billing-history"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _doctl_completion_bash()
 {
     last_command="doctl_completion_bash"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_completion_fish()
+{
+    last_command="doctl_completion_fish"
 
     command_aliases=()
 
@@ -795,6 +900,7 @@ _doctl_completion()
 
     commands=()
     commands+=("bash")
+    commands+=("fish")
     commands+=("zsh")
 
     flags=()
@@ -4538,6 +4644,10 @@ _doctl_compute_load-balancer_create()
     local_nonpersistent_flags+=("--algorithm=")
     flags+=("--droplet-ids=")
     local_nonpersistent_flags+=("--droplet-ids=")
+    flags+=("--enable-backend-keepalive")
+    local_nonpersistent_flags+=("--enable-backend-keepalive")
+    flags+=("--enable-proxy-protocol")
+    local_nonpersistent_flags+=("--enable-proxy-protocol")
     flags+=("--forwarding-rules=")
     local_nonpersistent_flags+=("--forwarding-rules=")
     flags+=("--health-check=")
@@ -4763,6 +4873,10 @@ _doctl_compute_load-balancer_update()
     local_nonpersistent_flags+=("--algorithm=")
     flags+=("--droplet-ids=")
     local_nonpersistent_flags+=("--droplet-ids=")
+    flags+=("--enable-backend-keepalive")
+    local_nonpersistent_flags+=("--enable-backend-keepalive")
+    flags+=("--enable-proxy-protocol")
+    local_nonpersistent_flags+=("--enable-proxy-protocol")
     flags+=("--forwarding-rules=")
     local_nonpersistent_flags+=("--forwarding-rules=")
     flags+=("--health-check=")
@@ -9382,6 +9496,248 @@ _doctl_version()
     noun_aliases=()
 }
 
+_doctl_vpcs_create()
+{
+    last_command="doctl_vpcs_create"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--description=")
+    local_nonpersistent_flags+=("--description=")
+    flags+=("--ip-range=")
+    local_nonpersistent_flags+=("--ip-range=")
+    flags+=("--name=")
+    local_nonpersistent_flags+=("--name=")
+    flags+=("--region=")
+    local_nonpersistent_flags+=("--region=")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_vpcs_delete()
+{
+    last_command="doctl_vpcs_delete"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--force")
+    flags+=("-f")
+    local_nonpersistent_flags+=("--force")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_vpcs_get()
+{
+    last_command="doctl_vpcs_get"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--format=")
+    local_nonpersistent_flags+=("--format=")
+    flags+=("--no-header")
+    local_nonpersistent_flags+=("--no-header")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_vpcs_list()
+{
+    last_command="doctl_vpcs_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--format=")
+    local_nonpersistent_flags+=("--format=")
+    flags+=("--no-header")
+    local_nonpersistent_flags+=("--no-header")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_vpcs_update()
+{
+    last_command="doctl_vpcs_update"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--description=")
+    local_nonpersistent_flags+=("--description=")
+    flags+=("--name=")
+    local_nonpersistent_flags+=("--name=")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_vpcs()
+{
+    last_command="doctl_vpcs"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("create")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("c")
+        aliashash["c"]="create"
+    fi
+    commands+=("delete")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("d")
+        aliashash["d"]="delete"
+        command_aliases+=("rm")
+        aliashash["rm"]="delete"
+    fi
+    commands+=("get")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("g")
+        aliashash["g"]="get"
+    fi
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+    commands+=("update")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("u")
+        aliashash["u"]="update"
+    fi
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _doctl_root_command()
 {
     last_command="doctl"
@@ -9392,6 +9748,11 @@ _doctl_root_command()
     commands+=("account")
     commands+=("auth")
     commands+=("balance")
+    commands+=("billing-history")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("bh")
+        aliashash["bh"]="billing-history"
+    fi
     
     commands+=("compute")
     commands+=("databases")
@@ -9417,6 +9778,7 @@ _doctl_root_command()
     fi
     commands+=("projects")
     commands+=("version")
+    commands+=("vpcs")
 
     flags=()
     two_word_flags=()
