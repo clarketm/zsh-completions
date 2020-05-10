@@ -10,9 +10,23 @@
 # -------
 #
 #  * Julien Nicoulaud <julien.nicoulaud@gmail.com>
+#  * Shohei YOSHIDA <syohex@gmail.com>
 #
 # ------------------------------------------------------------------------------
 
+_perf_events() {
+  local -a events=(${(@f)$(perf list | sed -n -e 's/^  \([^ =]*\).*$/\1/p')})
+  _values -s ',' 'events' $events
+}
+
+_perf_top_fields() {
+  local fields=(overhead overhead_sys overhead_us overhead_children sample period)
+  _values -s ',' 'fields' $fields
+}
+
+_perf_stat_command() {
+  _alternative "_command_names -e" "subcommand:command:(record report)"
+}
 
 _perf() {
   local context curcontext="$curcontext" state line
@@ -155,7 +169,30 @@ _perf() {
             && ret=0
         ;;
         (probe)
-          # TODO not implemented
+          _arguments \
+            '(-k --vmlinux)'{-k,--vmlinux=}'[specify vmlinux path which has debuginfo]:path:_files' \
+            '(-m --module)'{-m,--module=}'[specify module name]:modname_or_path:_files' \
+            '(-s --source)'{-s,--source=}'[specify path to kernel source]:path:_files -/' \
+            '(-v --verbose -q --quiet)'{-v,--verbose}'[be more verbose]' \
+            '(-q --quiet -v --verbose)'{-q,--quiet}'[be quiet]' \
+            \*{-a,--add=}'[define a probe event]:probe:' \
+            \*{-d,--del=}'[delete probe events]:probe:' \
+            '(-l --list)'{-l,--list=}'[list up current probe events]:event:' \
+            '(-L --line)'{-L,--line=}'[show source code lines which can be probed]' \
+            \*{-V,--vars=}'[show available local variables at given probe point]:probe:' \
+            '--externs[show external defined variables]' \
+            '--no-inlines[search only for non-inlined functions]' \
+            \*{-F,--funcs=}'[show available functions in given module or kernel]:filter:' \
+            \*{-D,--definition=}'[show trace-event definition]:probe:' \
+            '*--filter=[set filter]:filter:' \
+            '(-f --force)'{-f,--force}'[forcibly add events with existing name]' \
+            '(-n --dry-run)'{-n,--dry-run}'[dry run]' \
+            '--cache[cache the probes]' \
+            '--max-probes=[set the maximum number of probe points for an event]:number:' \
+            '--target-ns=[obtain mount namespace information from the target pid]:pid:_pids' \
+            '(-x --exec)'{-x,--exec=}'[specify path to the executable of shared library]:path:_files' \
+            '--demangle-kernel[demangle kernel symbols]' \
+            && ret=0
         ;;
         (record)
           # TODO not implemented
@@ -176,7 +213,43 @@ _perf() {
           # TODO not implemented
         ;;
         (stat)
-          # TODO not implemented
+          _arguments \
+            '(-e --events)'{-e,--events=}'[select the PMU event]:event:_perf_events' \
+            '(-i --no-inherit)'{-i,--no-inherit}'[child tasks do not inherit conters]' \
+            '(-p --pid)'{-p,--pid=}'[stat events on existing process id]:pid:_pids' \
+            '(-t --tid)'{-t,--tid=}'[stat events on existing thread id]:tid:' \
+            '(-a --all-cpus)'{-a,--all-cpus}'[system-wide collection from all CPUs]' \
+            '--no-scale[do not scale/normalize counter values]' \
+            \*{-d,--detailed}'[print more detailed statistics]' \
+            '(-r --repeat)'{-r,--repeat=}'[repeat command and print average + stddev]:count:' \
+            '(-B --big-num)'{-B,--big-num}'[print large numbers with thousands separators according to locale]' \
+            '(-C --cpu)'{-C,--cpu=}'[count only the list of CPUs]:cpus:' \
+            '(-A --no-aggr)'{-A,--no-aggr}'[do not aggregate counts across all monitored CPUs]' \
+            '(-n --null)'{-n,--null}'[null run]' \
+            '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-x --field-seperator)'{-x,--field-separator=}'[print separator]' \
+            '--table[display time for each run in a table format]' \
+            '(-G --cgroup)'{-G,--cgroup=}'[monitor only in the container called this name]' \
+            '(-o --output)'{-o,--output=}'[print the output into this file]:file:_files' \
+            '--append[append to the output file desinated with -o option]' \
+            '--log-fd[log output to fd, instead of stderr]' \
+            '--pre[pre measurement hook]: :_command_names -e' \
+            '--post[post measurement hook]: :_command_names -e' \
+            '(-I --interval-print)'{-I,--interval-print=}'[print count deltas every millseconds]:msec:' \
+            '--interval-count[print count delta for fixed number of times]:times:' \
+            '--interval-clear[clear the screen before next interval]' \
+            '--timeout[stop the perf stat session and print count after milliseconds]:msec:' \
+            '--metric-only[only print compted metrics]' \
+            '--per-socket[aggregate counts per processor socket for system-wide mode measurements]' \
+            '--per-die[aggregate counts per processor die for sytem-wide mode measurements]' \
+            '--per-core[aggregate counts per phisical processor for sytem-wide mode measurements]' \
+            '--per-thread[aggregate counts per mmonitored threads]' \
+            '(-D --delay)'{-D,--delay=}'[wait msecs before measuring]:msec:' \
+            '(-T --transaction)'{-T,--transaction}'[print statistics of transactional execution]' \
+            '(-)1:command:_perf_stat_command' \
+            '*::arg:_normal' \
+            && ret=0
+          # TODO report/record sub-subcommand completion
         ;;
         (test)
           _arguments \
@@ -196,7 +269,63 @@ _perf() {
             && ret=0
         ;;
         (top)
-          # TODO not implemented
+          _arguments \
+            '(-a --all-cpus)'{-a,--all-cpus}'[system wide collection]' \
+            '(-c --count)'{-c,--count=}'[event period to sample]:count:' \
+            '(-C --cpu)'{-C,--cpu=}'[monitor only the list of CPUs provided]:cpu_list:' \
+            '(-d --delay)'{-d,--delay=}'[number of seconds to delay between refreshes]' \
+            '(-e --event)'{-e,--event=}'[select the PMU event]:event:_perf_events' \
+            '(-E --entries)'{-E,--entries=}'[display thie many functions]' \
+            '(-f --count-filter)'{-f,--count-filter=}'[only display fnctions with more events than this]:count:' \
+            '--group[put the counters into a counter group]' \
+            '(-F --freq)'{-F,--freq=}'[profile at thie frequency]:freq:(max)' \
+            '(-i --inherit)'{-i,--inherit}'[child tasks do not inherit counters]' \
+            '(-k --vmlinux --ignore-vmlinux)'{-k,--vmlinux=}'[path to vmlinux]:vmlinux:_files' \
+            '(-k --vmlinux)--ignore-vmlinux[ignore vmlinux files]' \
+            '--kallsyms=[kallsyms pathname]:sym_path:_files' \
+            '(-m --mmap-pages)'{-m,--mmap-pages=}'[number of mmap data pages or size]:number:' \
+            '(-p --pid)'{-p,--pid=}'[profile events on existing process ID]:pid:_pids' \
+            '(-t --tid)'{-t,--tid=}'[profile events on existing thread ID]:tid:' \
+            '(-u --uid)'{-u,--uid=}'[record events in threads owned by uid]:uid:' \
+            '(-r --realtime)'{-r,--realtime=}'[collect data with this RT SCHED_FIFO priority]:priority:' \
+            '--sym-annotate=[annotate this symbol]' \
+            '(-K --hide_kernel_symbols)'{-K,--hide_kernel_symbols}'[hide kernel symbols]' \
+            '(-U --hide_user_symbols)'{-K,--hide_user_symbols}'[hide user symbols]' \
+            '--demangle-kernel[demangle kernel symbols]' \
+            '(-D --dump-symtab)'{-D,--dump-symtab}'[dump the symbol table used for profiling]' \
+            '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-z --zero)'{-z,--zero}'[zero history access display updates]' \
+            '(-s --sort)'{-s,--sort}'[sort by keys]' \
+            '--fields=[specify output field ]:fields:_perf_top_fields' \
+            '(-n --show-nr-samples)'{-n,--show-nr-samples}'[show a column with the number of samples]' \
+            '--show-total-period[show a column with the sum of periods]' \
+            '--dsos[only consider symbols in these dsos]' \
+            '--comms[only consider symbols in these comms]' \
+            '--symbols[only consider these symbols]' \
+            '(-M --disassembler-style)'{-M,--disassembler-style=}'[set disassembler style]:style:' \
+            '(--no-source)--source[interleave source code with assembly code]' \
+            '(--source)--no-source[disable interleaving source code]' \
+            '--asm-raw[show raw instruction encoding of assembly instructions]' \
+            '-g[Enables call-graph recording]' \
+            '--call-graph[setup and enable call-graph recording]' \
+            '--children[accumulate callchain of children to parent entry]' \
+            '--max-stack[set the stack depth limit]' \
+            '--ignore-callees=[ignore callees of functions regex]:regex:' \
+            '--percent-limit[do not show entries which have an overhead under that percent]' \
+            '(-w --column-widths)'{-w,--column-widths=}'[force each column width to this list]' \
+            '--proc-map-timeout[set timeout limit for processing process map]' \
+            '(-b --branch-any)'{-b,--branch-any}'[enable taken branch stack sampling]' \
+            '(-j --branch-filter)'{-j,--branch-filter}'[enable taken branch stack sampling]' \
+            '--raw-trace[do not use print fmt or plugins]' \
+            '--hierarchy[enable hierarchy output]' \
+            '--overwrite[overwrite records]' \
+            '--force[do not do ownership validation]' \
+            '--num-thread-synthesize[threads to run when synthesizing events for existing processes]'\
+            '--namespaces[record events of type PREF_RECORD_NAMESPACES]' \
+            '--switch-on=[only consider events after this event is found]:event:' \
+            '--switch-off=[stop considering events after this event is found]:event:' \
+            '--show-on-off-events[show the --switch-on/off events too]' \
+            && ret=0
         ;;
         (help)
           _arguments \
