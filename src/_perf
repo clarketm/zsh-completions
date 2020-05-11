@@ -24,8 +24,18 @@ _perf_top_fields() {
   _values -s ',' 'fields' $fields
 }
 
+_perf_pids() {
+  local -a pids=(/proc/[1-9]*(:t))
+  _values -s ',' 'pids' $pids
+}
+
 _perf_stat_command() {
   _alternative "_command_names -e" "subcommand:command:(record report)"
+}
+
+_perf_c2c_coalesce() {
+  local columns=(tid pid iaddr dso)
+  _values -s ',' 'columns' $columns
 }
 
 _perf() {
@@ -101,6 +111,22 @@ _perf() {
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
             && ret=0
         ;;
+        (c2c)
+          # TODO not implemented
+          _arguments \
+            '1:subcmd:(record report)' \
+            '*:: :->c2c_args'
+        ;;
+        (config)
+          _arguments \
+            '(-l --list)'{-l,--list}'[show current config variables for all sections]' \
+            '--user[read or write user config]' \
+            '--system[read or write system config]' \
+            && ret=0
+        ;;
+        (data)
+          # TODO not implemented
+        ;;
         (diff)
           _arguments \
             '(-M --displacement)'{-M,--displacement}'[show position displacement relative to baseline]' \
@@ -123,10 +149,29 @@ _perf() {
             '(-i --input)'{-i,--input=}'[input file name]: :_files' \
             && ret=0
         ;;
+        (ftrace)
+          _arguments \
+            '(-t --tracer)'{-t,--tracer=}'[tracer to use]:tracer:(function_tracer function)' \
+            '(-v --verbose)'{-v,--verbose=}'[verbosity level]:level:' \
+            '(-p --pid)'{-p,--pid=}'[trace on existing process ID]:pids:_perf_pids' \
+            '(-a --all-cpus)'{-a,--all-cpus}'[force system-wide collection]' \
+            '(-C --cpu)'{-C,--cpu=}'[only trace for the list of CPUs]:cpu_list:' \
+            \*{-T,--trace-funcs=}'[only trace functions given by the argument]:func:' \
+            \*{-N,--notrace-funcs=}'[do not trace functions given by the argument]:func:' \
+            \*{-G,--graph-funcs=}'[set graph filter on the given function]:func:' \
+            \*{-g,--nograph-funcs=}'[set graph notrace filter on the given function]:func:' \
+            '(-D,--graph-depth)'{-D,--graph-depth=}'[set max depth for function graph tracer]' \
+            && ret=0
+        ;;
         (inject)
           _arguments \
             '(-b --build-ids)'{-b,--build-ids=}'[inject build-ids into the output stream]:build-id list' \
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            && ret=0
+        ;;
+        (kallsyms)
+          _arguments \
+            '(-v --verbose)'{-v,--verbose=}'[increse verbosity level]' \
             && ret=0
         ;;
         (kmem)
@@ -167,6 +212,9 @@ _perf() {
             '(-D --dump-raw-trace)'{-D,--dump-raw-trace}'[dump raw trace in ASCII]' \
             '1:command:((record\:record\ lock\ events trace\:show\ raw\ lock\ events report\:report\ statistical\ data))' \
             && ret=0
+        ;;
+        (mem)
+          # TODO not implemented
         ;;
         (probe)
           _arguments \
@@ -214,7 +262,7 @@ _perf() {
         ;;
         (stat)
           _arguments \
-            '(-e --events)'{-e,--events=}'[select the PMU event]:event:_perf_events' \
+            \*{-e,--events=}'[select the PMU event]:event:_perf_events' \
             '(-i --no-inherit)'{-i,--no-inherit}'[child tasks do not inherit conters]' \
             '(-p --pid)'{-p,--pid=}'[stat events on existing process id]:pid:_pids' \
             '(-t --tid)'{-t,--tid=}'[stat events on existing thread id]:tid:' \
@@ -274,7 +322,7 @@ _perf() {
             '(-c --count)'{-c,--count=}'[event period to sample]:count:' \
             '(-C --cpu)'{-C,--cpu=}'[monitor only the list of CPUs provided]:cpu_list:' \
             '(-d --delay)'{-d,--delay=}'[number of seconds to delay between refreshes]' \
-            '(-e --event)'{-e,--event=}'[select the PMU event]:event:_perf_events' \
+            \*{-e,--event=}'[select the PMU event]:event:_perf_events' \
             '(-E --entries)'{-E,--entries=}'[display thie many functions]' \
             '(-f --count-filter)'{-f,--count-filter=}'[only display fnctions with more events than this]:count:' \
             '--group[put the counters into a counter group]' \
@@ -327,6 +375,14 @@ _perf() {
             '--show-on-off-events[show the --switch-on/off events too]' \
             && ret=0
         ;;
+        (trace)
+          # TODO not implemented
+        ;;
+        (version)
+          _arguments \
+            '--build-options[the status of compiled-in libraries are printed]' \
+            && ret=0
+        ;;
         (help)
           _arguments \
             '(- : *)'{-a,--all}'[prints all the available commands on the standard output]' \
@@ -336,6 +392,41 @@ _perf() {
         *)
           _call_function ret _perf_cmd_$words[1] && ret=0
           (( ret )) && _message 'no more arguments'
+        ;;
+      esac
+    ;;
+  esac
+
+  case $state in
+    (c2c_args)
+      case $words[1] in
+        (record)
+          _arguments \
+            \*{-e,--event=}'[select the PMU event]:events:_perf_events' \
+            '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-l --ldlat)'{-l,--ldlat=}'[configure mem-loads latency]:latency:' \
+            '(-k --all-kernel)'{-k,--all-kernel}'[configure all used events to run in the kernel space]' \
+            '(-u --all-user)'{-u,--all-user}'[configure all used events to run in user space]' \
+            '1:command:_command_names -e' \
+            '*::args:_normal' \
+            && ret=0
+        ;;
+        (report)
+          _arguments \
+            '(-k --vmlinux)'{-k,--vmlinux=}'[vmlinux pathname]:vmlinux:_files' \
+            '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-i --input)'{-i,--input=}'[specify the input file to process]:proc_file:_files' \
+            '(-N --node-info)'{-N,--node-info}'[show extra node info in report]' \
+            '(-c --coalesce)'{-c,--coalesce=}'[specify sorting fields for single cacheline display]:field:_perf_c2c_coalesce' \
+            '(-g --call-graph)'{-g,--call-graph}'[setup callchains parameters]' \
+            '--stdio[force the stdio output]' \
+            '--stats[display only statistic tables]' \
+            '--full-symbols[display full length of symbols]' \
+            '--no-source[do not display source line column]' \
+            '--show-all[show all captured HITM lines]' \
+            '(-f --force)'{-f,--force}'[do not do ownership validation]' \
+            '(-d --display)'{-d,--display=}'[switch to HITM type]:hitm_type:(rmt lcl)' \
+            && ret=0
         ;;
       esac
     ;;
@@ -351,13 +442,19 @@ _perf_cmds() {
     'bench:general framework for benchmark suites'
     'buildid-cache:manage build-id cache'
     'buildid-list:list the buildids in a perf.data file'
+    'c2c:shared data C2C/HITM analyzer'
+    'config:get and set variables in a configuration file'
+    'data:data file related processing'
     'diff:read two perf.data files and display the differential profile'
     'evlist:list the event names in a perf.data file'
+    'ftrace:simple wrapper for kernel ftrace functionality'
     'inject:filter to augment the events stream with additional information'
+    'kallsyms:searches running kernel for symbols'
     'kmem:tool to trace/measure kernel memory(slab) properties'
     'kvm:tool to trace/measure kvm guest os'
     'list:list all symbolic event types'
     'lock:analyze lock events'
+    'mem:profile memory access'
     'probe:define new dynamic tracepoints'
     'record:run a command and record its profile into perf.data'
     'report:read perf.data (created by perf record) and display the profile'
@@ -367,6 +464,8 @@ _perf_cmds() {
     'test:runs sanity tests'
     'timechart:tool to visualize total system behavior during a workload'
     'top:system profiling tool'
+    'trace:strace inspired tool'
+    'version:display the version of perf binary'
     'help:show command usage information'
   )
   _describe -t commands 'command' commands "$@"
