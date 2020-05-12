@@ -38,6 +38,17 @@ _perf_c2c_coalesce() {
   _values -s ',' 'columns' $columns
 }
 
+_perf_mem_type() {
+  local types=(load store)
+  _values -s ',' 'type' $types
+}
+
+_perf_test_list() {
+  # TODO show test detail
+  local -a test_list=(${(@f)$(perf test list 2>&1 | sed -n -e 's/^ *\([^ ]*\): \(.*\)$/\1/p')})
+  _values -s ',' 'test' $test_list
+}
+
 _perf() {
   local context curcontext="$curcontext" state line
   typeset -A opt_args
@@ -98,8 +109,16 @@ _perf() {
         (buildid-cache)
           _arguments \
             '(-a --add)'{-a,--add=}'[add specified file to the cache]: :_files' \
+            '(-f --force)'{-f,--force}'[do not complain, do it]' \
+            '(-k --kcore)'{-k,--kcore=}'[add specified kcore file to core]:kcore:_files' \
             '(-r --remove)'{-r,--remove=}'[remove specified file from the cache]: :_files' \
+            '(-p,--purge)'{-p,--purge=}'[purge all cached binaries including older caches which have specified path]: :_files' \
+            '(-P,--purge-all)'{-P,--purge-all}'[puge all cached binaries]' \
+            '(-M,--missing)'{-M,--missing=}'[list missing build ids in the cache for the specified file]: :_files' \
+            '(-u,--update)'{-u,--update=}'[update specified file of the cache]: :_files' \
+            '(-l,--list)'{-l,--list}'[list all valid binaries from cache]' \
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '--target-ns=[obtain mount namespace information from the target pid]: :_pids' \
             && ret=0
 		;;
         (buildid-list)
@@ -112,7 +131,6 @@ _perf() {
             && ret=0
         ;;
         (c2c)
-          # TODO not implemented
           _arguments \
             '1:subcmd:(record report)' \
             '*:: :->c2c_args'
@@ -167,6 +185,14 @@ _perf() {
           _arguments \
             '(-b --build-ids)'{-b,--build-ids=}'[inject build-ids into the output stream]:build-id list' \
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-i --input)'{-i,--input=}'[input file name]:input:_files' \
+            '(-o --output)'{-o,--output=}'[output file name]:output:_files' \
+            '(-s --sched-stat)'{-s,--sched-stat}'[merge sched_stat and sched_switch for getting events]' \
+            '--kallsyms=[kallsyms file]:kallsyms:_files' \
+            '--itrace=[decode instruction tracing data]' \
+            '--strip[use with --itrace to strip out non-synthesized events]' \
+            '(-j --jit)'{-j,--jit}'[process jitdump files]' \
+            '(-f --force)'{-f,--force}'[do not complain, do it]' \
             && ret=0
         ;;
         (kallsyms)
@@ -214,7 +240,18 @@ _perf() {
             && ret=0
         ;;
         (mem)
-          # TODO not implemented
+          _arguments \
+            '(-i --input)'{-i,--input=}'[input file name]:file:_files' \
+            '(-f --force)'{-f,--force}'[do not ownership validation]' \
+            '(-t --type)'{-t,--type=}'[select the memory operation type]:type:_perf_mem_type' \
+            '(-D --dump-raw-samples)'{-D,--dump-raw-trace}'[dump the raw decoded samples]' \
+            '(-x --field-separator)'{-x,--field-separator=}'[specify the field separator used when raw samples]:separator:' \
+            '(-C --cpu)'{-C,--cpu=}'[monitor only on the list of CPUs provided]:cpus:' \
+            '(-U --hide-unresolved)'{-U,--hide-unresolved}'[only display entries resolved to a symbol]' \
+            '(-p --phys-data)'{-p,--phys-data}'[record/report sample phisical addresses]' \
+            '1:command:(record report)' \
+            '*::arg:->mem_args' \
+            && ret=0
         ;;
         (probe)
           _arguments \
@@ -302,6 +339,9 @@ _perf() {
         (test)
           _arguments \
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '(-s --skip)'{-s,--skip=}'[Tests to skip]:tests:_perf_test_list' \
+            '(-F --dont-fork)'{-F,--dont-fork}'[do not fork child for each test]' \
+            '1:command:((list))' \
             && ret=0
         ;;
         (timechart)
@@ -426,6 +466,21 @@ _perf() {
             '--show-all[show all captured HITM lines]' \
             '(-f --force)'{-f,--force}'[do not do ownership validation]' \
             '(-d --display)'{-d,--display=}'[switch to HITM type]:hitm_type:(rmt lcl)' \
+            && ret=0
+        ;;
+      esac
+    ;;
+    (mem_args)
+      case $words[1] in
+        (record)
+          _arguments \
+            \*{-e,--event=}'[event selector]:events:_perf_events' \
+            '(-K --all-kernel)'{-K,--all-kernel}'[configure all used events to run in kernel space]' \
+            '(-U --all-user)'{-K,--all-user}'[configure all used events to run in user space]' \
+            '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+            '--ldlat=[specify desired latency for loads event]:latency:' \
+            '1:command:_command_names -e' \
+            '*::args:_normal' \
             && ret=0
         ;;
       esac
