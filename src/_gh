@@ -15,6 +15,8 @@ function _gh {
   cmnds)
     commands=(
       "completion:Generate shell completion scripts"
+      "config:Set and get gh settings"
+      "credits:View project's credits"
       "help:Help about any command"
       "issue:Create and view issues"
       "pr:Create, view, and checkout pull requests"
@@ -27,6 +29,12 @@ function _gh {
   case "$words[1]" in
   completion)
     _gh_completion
+    ;;
+  config)
+    _gh_config
+    ;;
+  credits)
+    _gh_credits
     ;;
   help)
     _gh_help
@@ -50,6 +58,55 @@ function _gh_completion {
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
 }
 
+
+function _gh_config {
+  local -a commands
+
+  _arguments -C \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "get:Prints the value of a given configuration key."
+      "set:Updates configuration with the value of a given key."
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  get)
+    _gh_config_get
+    ;;
+  set)
+    _gh_config_set
+    ;;
+  esac
+}
+
+function _gh_config_get {
+  _arguments \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
+function _gh_config_set {
+  _arguments \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
+function _gh_credits {
+  _arguments \
+    '(-s --static)'{-s,--static}'[Print a static version of the credits]' \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
 function _gh_help {
   _arguments \
     '--help[Show help for command]' \
@@ -69,8 +126,10 @@ function _gh_issue {
   case $state in
   cmnds)
     commands=(
+      "close:close issue"
       "create:Create a new issue"
       "list:List and filter issues in this repository"
+      "reopen:reopen issue"
       "status:Show status of relevant issues"
       "view:View an issue"
     )
@@ -79,11 +138,17 @@ function _gh_issue {
   esac
 
   case "$words[1]" in
+  close)
+    _gh_issue_close
+    ;;
   create)
     _gh_issue_create
     ;;
   list)
     _gh_issue_list
+    ;;
+  reopen)
+    _gh_issue_reopen
     ;;
   status)
     _gh_issue_status
@@ -94,9 +159,19 @@ function _gh_issue {
   esac
 }
 
+function _gh_issue_close {
+  _arguments \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
 function _gh_issue_create {
   _arguments \
+    '(*-a *--assignee)'{\*-a,\*--assignee}'[Assign a person by their `login`]:' \
     '(-b --body)'{-b,--body}'[Supply a body. Will prompt for one otherwise.]:' \
+    '(*-l *--label)'{\*-l,\*--label}'[Add a label by `name`]:' \
+    '(-m --milestone)'{-m,--milestone}'[Add the issue to a milestone by `name`]:' \
+    '(*-p *--project)'{\*-p,\*--project}'[Add the issue to a project by `name`]:' \
     '(-t --title)'{-t,--title}'[Supply a title. Will prompt for one otherwise.]:' \
     '(-w --web)'{-w,--web}'[Open the browser to create an issue]' \
     '--help[Show help for command]' \
@@ -114,6 +189,12 @@ function _gh_issue_list {
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
 }
 
+function _gh_issue_reopen {
+  _arguments \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
 function _gh_issue_status {
   _arguments \
     '--help[Show help for command]' \
@@ -122,7 +203,7 @@ function _gh_issue_status {
 
 function _gh_issue_view {
   _arguments \
-    '(-w --web)'{-w,--web}'[Open issue in browser]' \
+    '(-w --web)'{-w,--web}'[Open an issue in the browser]' \
     '--help[Show help for command]' \
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
 }
@@ -141,10 +222,12 @@ function _gh_pr {
   cmnds)
     commands=(
       "checkout:Check out a pull request in Git"
+      "close:Close a pull request"
       "create:Create a pull request"
       "list:List and filter pull requests in this repository"
+      "reopen:Reopen a pull request"
       "status:Show status of relevant pull requests"
-      "view:View a pull request in the browser"
+      "view:View a pull request"
     )
     _describe "command" commands
     ;;
@@ -154,11 +237,17 @@ function _gh_pr {
   checkout)
     _gh_pr_checkout
     ;;
+  close)
+    _gh_pr_close
+    ;;
   create)
     _gh_pr_create
     ;;
   list)
     _gh_pr_list
+    ;;
+  reopen)
+    _gh_pr_reopen
     ;;
   status)
     _gh_pr_status
@@ -175,12 +264,23 @@ function _gh_pr_checkout {
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
 }
 
+function _gh_pr_close {
+  _arguments \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
 function _gh_pr_create {
   _arguments \
+    '(*-a *--assignee)'{\*-a,\*--assignee}'[Assign a person by their `login`]:' \
     '(-B --base)'{-B,--base}'[The branch into which you want your code merged]:' \
     '(-b --body)'{-b,--body}'[Supply a body. Will prompt for one otherwise.]:' \
     '(-d --draft)'{-d,--draft}'[Mark pull request as a draft]' \
     '(-f --fill)'{-f,--fill}'[Do not prompt for title/body and just use commit info]' \
+    '(*-l *--label)'{\*-l,\*--label}'[Add a label by `name`]:' \
+    '(-m --milestone)'{-m,--milestone}'[Add the pull request to a milestone by `name`]:' \
+    '(*-p *--project)'{\*-p,\*--project}'[Add the pull request to a project by `name`]:' \
+    '(*-r *--reviewer)'{\*-r,\*--reviewer}'[Request a review from someone by their `login`]:' \
     '(-t --title)'{-t,--title}'[Supply a title. Will prompt for one otherwise.]:' \
     '(-w --web)'{-w,--web}'[Open the web browser to create a pull request]' \
     '--help[Show help for command]' \
@@ -198,6 +298,12 @@ function _gh_pr_list {
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
 }
 
+function _gh_pr_reopen {
+  _arguments \
+    '--help[Show help for command]' \
+    '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
+}
+
 function _gh_pr_status {
   _arguments \
     '--help[Show help for command]' \
@@ -206,7 +312,7 @@ function _gh_pr_status {
 
 function _gh_pr_view {
   _arguments \
-    '(-w --web)'{-w,--web}'[Open pull request in browser]' \
+    '(-w --web)'{-w,--web}'[Open a pull request in the browser]' \
     '--help[Show help for command]' \
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
 }
@@ -227,7 +333,7 @@ function _gh_repo {
       "clone:Clone a repository locally"
       "create:Create a new repository"
       "fork:Create a fork of a repository"
-      "view:View a repository in the browser"
+      "view:View a repository"
     )
     _describe "command" commands
     ;;
@@ -277,7 +383,7 @@ function _gh_repo_fork {
 
 function _gh_repo_view {
   _arguments \
-    '(-w --web)'{-w,--web}'[Open repository in browser]' \
+    '(-w --web)'{-w,--web}'[Open a repository in the browser]' \
     '--help[Show help for command]' \
     '(-R --repo)'{-R,--repo}'[Select another repository using the `OWNER/REPO` format]:'
 }
