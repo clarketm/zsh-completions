@@ -1,0 +1,404 @@
+#compdef _kind kind
+
+
+function _kind {
+  local -a commands
+
+  _arguments -C \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "build:Build one of [base-image, node-image]"
+      "completion:Output shell completion code for the specified shell (bash or zsh)"
+      "create:Creates one of [cluster]"
+      "delete:Deletes one of [cluster]"
+      "export:Exports one of [kubeconfig, logs]"
+      "get:Gets one of [clusters, nodes, kubeconfig]"
+      "help:Help about any command"
+      "load:Loads images into nodes"
+      "version:Prints the kind CLI version"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  build)
+    _kind_build
+    ;;
+  completion)
+    _kind_completion
+    ;;
+  create)
+    _kind_create
+    ;;
+  delete)
+    _kind_delete
+    ;;
+  export)
+    _kind_export
+    ;;
+  get)
+    _kind_get
+    ;;
+  help)
+    _kind_help
+    ;;
+  load)
+    _kind_load
+    ;;
+  version)
+    _kind_version
+    ;;
+  esac
+}
+
+
+function _kind_build {
+  local -a commands
+
+  _arguments -C \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "base-image:Build the base node image"
+      "node-image:Build the node image"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  base-image)
+    _kind_build_base-image
+    ;;
+  node-image)
+    _kind_build_node-image
+    ;;
+  esac
+}
+
+function _kind_build_base-image {
+  _arguments \
+    '--image[name:tag of the resulting image to be built]:' \
+    '--source[path to the base image sources, autodetected by default]:' \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+function _kind_build_node-image {
+  _arguments \
+    '--base-image[name:tag of the base image to use for the build]:' \
+    '--image[name:tag of the resulting image to be built]:' \
+    '--kube-root[path to the Kubernetes source directory (if empty, the path is autodetected)]:' \
+    '--type[build type, one of [bazel, docker]]:' \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+
+function _kind_completion {
+  local -a commands
+
+  _arguments -C \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "bash:Output shell completions for bash"
+      "zsh:Output shell completions for zsh"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  bash)
+    _kind_completion_bash
+    ;;
+  zsh)
+    _kind_completion_zsh
+    ;;
+  esac
+}
+
+function _kind_completion_bash {
+  _arguments \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+function _kind_completion_zsh {
+  _arguments \
+    '(-h --help)'{-h,--help}'[help for zsh]' \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+
+function _kind_create {
+  local -a commands
+
+  _arguments -C \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "cluster:Creates a local Kubernetes cluster"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  cluster)
+    _kind_create_cluster
+    ;;
+  esac
+}
+
+function _kind_create_cluster {
+  _arguments \
+    '--config[path to a kind config file]:' \
+    '--image[node docker image to use for booting the cluster]:' \
+    '--kubeconfig[sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config]:' \
+    '--name[cluster context name]:' \
+    '--retain[retain nodes for debugging when cluster creation fails]' \
+    '--wait[wait for control plane node to be ready (default 0s)]:' \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+
+function _kind_delete {
+  local -a commands
+
+  _arguments -C \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "cluster:Deletes a cluster"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  cluster)
+    _kind_delete_cluster
+    ;;
+  esac
+}
+
+function _kind_delete_cluster {
+  _arguments \
+    '--kubeconfig[sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config]:' \
+    '--name[the cluster name]:' \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+
+function _kind_export {
+  local -a commands
+
+  _arguments -C \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "kubeconfig:Exports cluster kubeconfig"
+      "logs:Exports logs to a tempdir or [output-dir] if specified"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  kubeconfig)
+    _kind_export_kubeconfig
+    ;;
+  logs)
+    _kind_export_logs
+    ;;
+  esac
+}
+
+function _kind_export_kubeconfig {
+  _arguments \
+    '--kubeconfig[sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config]:' \
+    '--name[the cluster context name]:' \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+function _kind_export_logs {
+  _arguments \
+    '--name[the cluster context name]:' \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+
+function _kind_get {
+  local -a commands
+
+  _arguments -C \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "clusters:Lists existing kind clusters by their name"
+      "kubeconfig:Prints cluster kubeconfig"
+      "nodes:Lists existing kind nodes by their name"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  clusters)
+    _kind_get_clusters
+    ;;
+  kubeconfig)
+    _kind_get_kubeconfig
+    ;;
+  nodes)
+    _kind_get_nodes
+    ;;
+  esac
+}
+
+function _kind_get_clusters {
+  _arguments \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+function _kind_get_kubeconfig {
+  _arguments \
+    '--internal[use internal address instead of external]' \
+    '--name[the cluster context name]:' \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+function _kind_get_nodes {
+  _arguments \
+    '--name[the cluster context name]:' \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+function _kind_help {
+  _arguments \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+
+function _kind_load {
+  local -a commands
+
+  _arguments -C \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "docker-image:Loads docker image from host into nodes"
+      "image-archive:Loads docker image from archive into nodes"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  docker-image)
+    _kind_load_docker-image
+    ;;
+  image-archive)
+    _kind_load_image-archive
+    ;;
+  esac
+}
+
+function _kind_load_docker-image {
+  _arguments \
+    '--name[the cluster context name]:' \
+    '*--nodes[comma separated list of nodes to load images into]:' \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+function _kind_load_image-archive {
+  _arguments \
+    '--name[the cluster context name]:' \
+    '*--nodes[comma separated list of nodes to load images into]:' \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+function _kind_version {
+  _arguments \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
