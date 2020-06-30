@@ -55,6 +55,5 @@ cp -Lrf \
 
 
 if [ "$1" != "--dry-run" ]; then
-	git pull && git add . && git commit -m "$(date +%F)" && git push --tags origin master &> /dev/null || echo "nothing to commit :)"
-	git pull && git add . && git commit -m "$(date +%F)" && git push --tags origin master &> /dev/null || echo "nothing to commit :)"
+	git pull && git add . && git commit -m "$(date +%F)" && git push origin master || echo "nothing to commit :)"
 fi
