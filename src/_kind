@@ -14,8 +14,8 @@ function _kind {
   case $state in
   cmnds)
     commands=(
-      "build:Build one of [base-image, node-image]"
-      "completion:Output shell completion code for the specified shell (bash or zsh)"
+      "build:Build one of [node-image]"
+      "completion:Output shell completion code for the specified shell (bash, zsh or fish)"
       "create:Creates one of [cluster]"
       "delete:Deletes one of [cluster]"
       "export:Exports one of [kubeconfig, logs]"
@@ -73,7 +73,6 @@ function _kind_build {
   case $state in
   cmnds)
     commands=(
-      "base-image:Build the base node image"
       "node-image:Build the node image"
     )
     _describe "command" commands
@@ -81,22 +80,10 @@ function _kind_build {
   esac
 
   case "$words[1]" in
-  base-image)
-    _kind_build_base-image
-    ;;
   node-image)
     _kind_build_node-image
     ;;
   esac
-}
-
-function _kind_build_base-image {
-  _arguments \
-    '--image[name:tag of the resulting image to be built]:' \
-    '--source[path to the base image sources, autodetected by default]:' \
-    '--loglevel[DEPRECATED: see -v instead]:' \
-    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
-    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
 }
 
 function _kind_build_node-image {
@@ -125,6 +112,7 @@ function _kind_completion {
   cmnds)
     commands=(
       "bash:Output shell completions for bash"
+      "fish:Output shell completions for fish"
       "zsh:Output shell completions for zsh"
     )
     _describe "command" commands
@@ -135,6 +123,9 @@ function _kind_completion {
   bash)
     _kind_completion_bash
     ;;
+  fish)
+    _kind_completion_fish
+    ;;
   zsh)
     _kind_completion_zsh
     ;;
@@ -142,6 +133,13 @@ function _kind_completion {
 }
 
 function _kind_completion_bash {
+  _arguments \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+function _kind_completion_fish {
   _arguments \
     '--loglevel[DEPRECATED: see -v instead]:' \
     '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
@@ -211,6 +209,7 @@ function _kind_delete {
   cmnds)
     commands=(
       "cluster:Deletes a cluster"
+      "clusters:Deletes one or more clusters"
     )
     _describe "command" commands
     ;;
@@ -220,6 +219,9 @@ function _kind_delete {
   cluster)
     _kind_delete_cluster
     ;;
+  clusters)
+    _kind_delete_clusters
+    ;;
   esac
 }
 
@@ -227,6 +229,15 @@ function _kind_delete_cluster {
   _arguments \
     '--kubeconfig[sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config]:' \
     '--name[the cluster name]:' \
+    '--loglevel[DEPRECATED: see -v instead]:' \
+    '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
+    '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'
+}
+
+function _kind_delete_clusters {
+  _arguments \
+    '--all[delete all clusters]' \
+    '--kubeconfig[sets kubeconfig path instead of $KUBECONFIG or $HOME/.kube/config]:' \
     '--loglevel[DEPRECATED: see -v instead]:' \
     '(-q --quiet)'{-q,--quiet}'[silence all stderr output]' \
     '(-v --verbosity)'{-v,--verbosity}'[info log verbosity]:'

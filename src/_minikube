@@ -182,9 +182,71 @@ __minikube_contains_word()
     return 1
 }
 
+__minikube_handle_go_custom_completion()
+{
+    __minikube_debug "${FUNCNAME[0]}: cur is ${cur}, words[*] is ${words[*]}, #words[@] is ${#words[@]}"
+
+    local out requestComp lastParam lastChar comp directive args
+
+    # Prepare the command to request completions for the program.
+    # Calling ${words[0]} instead of directly minikube allows to handle aliases
+    args=("${words[@]:1}")
+    requestComp="${words[0]} __completeNoDesc ${args[*]}"
+
+    lastParam=${words[$((${#words[@]}-1))]}
+    lastChar=${lastParam:$((${#lastParam}-1)):1}
+    __minikube_debug "${FUNCNAME[0]}: lastParam ${lastParam}, lastChar ${lastChar}"
+
+    if [ -z "${cur}" ] && [ "${lastChar}" != "=" ]; then
+        # If the last parameter is complete (there is a space following it)
+        # We add an extra empty parameter so we can indicate this to the go method.
+        __minikube_debug "${FUNCNAME[0]}: Adding extra empty parameter"
+        requestComp="${requestComp} \"\""
+    fi
+
+    __minikube_debug "${FUNCNAME[0]}: calling ${requestComp}"
+    # Use eval to handle any environment variables and such
+    out=$(eval "${requestComp}" 2>/dev/null)
+
+    # Extract the directive integer at the very end of the output following a colon (:)
+    directive=${out##*:}
+    # Remove the directive
+    out=${out%:*}
+    if [ "${directive}" = "${out}" ]; then
+        # There is not directive specified
+        directive=0
+    fi
+    __minikube_debug "${FUNCNAME[0]}: the completion directive is: ${directive}"
+    __minikube_debug "${FUNCNAME[0]}: the completions are: ${out[*]}"
+
+    if [ $((directive & 1)) -ne 0 ]; then
+        # Error code.  No completion.
+        __minikube_debug "${FUNCNAME[0]}: received error from custom completion go code"
+        return
+    else
+        if [ $((directive & 2)) -ne 0 ]; then
+            if [[ $(type -t compopt) = "builtin" ]]; then
+                __minikube_debug "${FUNCNAME[0]}: activating no space"
+                compopt -o nospace
+            fi
+        fi
+        if [ $((directive & 4)) -ne 0 ]; then
+            if [[ $(type -t compopt) = "builtin" ]]; then
+                __minikube_debug "${FUNCNAME[0]}: activating no file completion"
+                compopt +o default
+            fi
+        fi
+
+        while IFS='' read -r comp; do
+            COMPREPLY+=("$comp")
+        done < <(compgen -W "${out[*]}" -- "$cur")
+    fi
+}
+
 __minikube_handle_reply()
 {
     __minikube_debug "${FUNCNAME[0]}"
+    local comp
     case $cur in
         -*)
             if [[ $(type -t compopt) = "builtin" ]]; then
@@ -196,7 +258,9 @@ __minikube_handle_reply()
             else
                 allflags=("${flags[*]} ${two_word_flags[*]}")
             fi
-            COMPREPLY=( $(compgen -W "${allflags[*]}" -- "$cur") )
+            while IFS='' read -r comp; do
+                COMPREPLY+=("$comp")
+            done < <(compgen -W "${allflags[*]}" -- "$cur")
             if [[ $(type -t compopt) = "builtin" ]]; then
                 [[ "${COMPREPLY[0]}" == *= ]] || compopt +o nospace
             fi
@@ -242,14 +306,22 @@ __minikube_handle_reply()
     completions=("${commands[@]}")
     if [[ ${#must_have_one_noun[@]} -ne 0 ]]; then
         completions=("${must_have_one_noun[@]}")
+    elif [[ -n "${has_completion_function}" ]]; then
+        # if a go completion function is provided, defer to that function
+        completions=()
+        __minikube_handle_go_custom_completion
     fi
     if [[ ${#must_have_one_flag[@]} -ne 0 ]]; then
         completions+=("${must_have_one_flag[@]}")
     fi
-    COMPREPLY=( $(compgen -W "${completions[*]}" -- "$cur") )
+    while IFS='' read -r comp; do
+        COMPREPLY+=("$comp")
+    done < <(compgen -W "${completions[*]}" -- "$cur")
 
     if [[ ${#COMPREPLY[@]} -eq 0 && ${#noun_aliases[@]} -gt 0 && ${#must_have_one_noun[@]} -ne 0 ]]; then
-        COMPREPLY=( $(compgen -W "${noun_aliases[*]}" -- "$cur") )
+        while IFS='' read -r comp; do
+            COMPREPLY+=("$comp")
+        done < <(compgen -W "${noun_aliases[*]}" -- "$cur")
     fi
 
     if [[ ${#COMPREPLY[@]} -eq 0 ]]; then
@@ -284,7 +356,7 @@ __minikube_handle_filename_extension_flag()
 __minikube_handle_subdirs_in_dir_flag()
 {
     local dir="$1"
-    pushd "${dir}" >/dev/null 2>&1 && _filedir -d && popd >/dev/null 2>&1
+    pushd "${dir}" >/dev/null 2>&1 && _filedir -d && popd >/dev/null 2>&1 || return
 }
 
 __minikube_handle_flag()
@@ -895,6 +967,48 @@ _minikube_completion()
     noun_aliases=()
 }
 
+_minikube_config_defaults()
+{
+    last_command="minikube_config_defaults"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    local_nonpersistent_flags+=("--output=")
+    flags+=("--alsologtostderr")
+    flags+=("--bootstrapper=")
+    two_word_flags+=("--bootstrapper")
+    two_word_flags+=("-b")
+    flags+=("--log_backtrace_at=")
+    two_word_flags+=("--log_backtrace_at")
+    flags+=("--log_dir=")
+    two_word_flags+=("--log_dir")
+    flags+=("--logtostderr")
+    flags+=("--profile=")
+    two_word_flags+=("--profile")
+    two_word_flags+=("-p")
+    flags+=("--stderrthreshold=")
+    two_word_flags+=("--stderrthreshold")
+    flags+=("--v=")
+    two_word_flags+=("--v")
+    two_word_flags+=("-v")
+    flags+=("--vmodule=")
+    two_word_flags+=("--vmodule")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _minikube_config_get()
 {
     last_command="minikube_config_get"
@@ -1061,6 +1175,7 @@ _minikube_config()
     command_aliases=()
 
     commands=()
+    commands+=("defaults")
     commands+=("get")
     commands+=("set")
     commands+=("unset")
@@ -1549,6 +1664,45 @@ _minikube_node_delete()
     noun_aliases=()
 }
 
+_minikube_node_list()
+{
+    last_command="minikube_node_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--alsologtostderr")
+    flags+=("--bootstrapper=")
+    two_word_flags+=("--bootstrapper")
+    two_word_flags+=("-b")
+    flags+=("--log_backtrace_at=")
+    two_word_flags+=("--log_backtrace_at")
+    flags+=("--log_dir=")
+    two_word_flags+=("--log_dir")
+    flags+=("--logtostderr")
+    flags+=("--profile=")
+    two_word_flags+=("--profile")
+    two_word_flags+=("-p")
+    flags+=("--stderrthreshold=")
+    two_word_flags+=("--stderrthreshold")
+    flags+=("--v=")
+    two_word_flags+=("--v")
+    two_word_flags+=("-v")
+    flags+=("--vmodule=")
+    two_word_flags+=("--vmodule")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _minikube_node_start()
 {
     last_command="minikube_node_start"
@@ -1565,9 +1719,6 @@ _minikube_node_start()
 
     flags+=("--delete-on-failure")
     local_nonpersistent_flags+=("--delete-on-failure")
-    flags+=("--name=")
-    two_word_flags+=("--name")
-    local_nonpersistent_flags+=("--name=")
     flags+=("--alsologtostderr")
     flags+=("--bootstrapper=")
     two_word_flags+=("--bootstrapper")
@@ -1607,9 +1758,6 @@ _minikube_node_stop()
     flags_with_completion=()
     flags_completion=()
 
-    flags+=("--name=")
-    two_word_flags+=("--name")
-    local_nonpersistent_flags+=("--name=")
     flags+=("--alsologtostderr")
     flags+=("--bootstrapper=")
     two_word_flags+=("--bootstrapper")
@@ -1644,47 +1792,9 @@ _minikube_node()
     commands=()
     commands+=("add")
     commands+=("delete")
+    commands+=("list")
     commands+=("start")
     commands+=("stop")
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--alsologtostderr")
-    flags+=("--bootstrapper=")
-    two_word_flags+=("--bootstrapper")
-    two_word_flags+=("-b")
-    flags+=("--log_backtrace_at=")
-    two_word_flags+=("--log_backtrace_at")
-    flags+=("--log_dir=")
-    two_word_flags+=("--log_dir")
-    flags+=("--logtostderr")
-    flags+=("--profile=")
-    two_word_flags+=("--profile")
-    two_word_flags+=("-p")
-    flags+=("--stderrthreshold=")
-    two_word_flags+=("--stderrthreshold")
-    flags+=("--v=")
-    two_word_flags+=("--v")
-    two_word_flags+=("-v")
-    flags+=("--vmodule=")
-    two_word_flags+=("--vmodule")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
-_minikube_options()
-{
-    last_command="minikube_options"
-
-    command_aliases=()
-
-    commands=()
 
     flags=()
     two_word_flags=()
@@ -2107,6 +2217,9 @@ _minikube_start()
     local_nonpersistent_flags+=("--apiserver-port=")
     flags+=("--auto-update-drivers")
     local_nonpersistent_flags+=("--auto-update-drivers")
+    flags+=("--base-image=")
+    two_word_flags+=("--base-image")
+    local_nonpersistent_flags+=("--base-image=")
     flags+=("--cache-images")
     local_nonpersistent_flags+=("--cache-images")
     flags+=("--container-runtime=")
@@ -2155,6 +2268,8 @@ _minikube_start()
     local_nonpersistent_flags+=("--feature-gates=")
     flags+=("--force")
     local_nonpersistent_flags+=("--force")
+    flags+=("--force-systemd")
+    local_nonpersistent_flags+=("--force-systemd")
     flags+=("--host-dns-resolver")
     local_nonpersistent_flags+=("--host-dns-resolver")
     flags+=("--host-only-cidr=")
@@ -2301,6 +2416,10 @@ _minikube_status()
     two_word_flags+=("--format")
     two_word_flags+=("-f")
     local_nonpersistent_flags+=("--format=")
+    flags+=("--node=")
+    two_word_flags+=("--node")
+    two_word_flags+=("-n")
+    local_nonpersistent_flags+=("--node=")
     flags+=("--output=")
     two_word_flags+=("--output")
     two_word_flags+=("-o")
@@ -2600,7 +2719,6 @@ _minikube_root_command()
     commands+=("logs")
     commands+=("mount")
     commands+=("node")
-    commands+=("options")
     commands+=("pause")
     commands+=("podman-env")
     commands+=("profile")
@@ -2667,6 +2785,7 @@ __start_minikube()
     local commands=("minikube")
     local must_have_one_flag=()
     local must_have_one_noun=()
+    local has_completion_function
     local last_command
     local nouns=()
 

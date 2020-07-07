@@ -33,9 +33,9 @@ cp -Lrf \
 # copy various completion files => custom/
 ################################################
 
-poetry completions zsh > "$cwd/custom/_poetry"
-kind completion zsh > "$cwd/custom/_kind"
-gh completion -s zsh > "$cwd/custom/_gh"
+command -v poetry >/dev/null && poetry completions zsh > "$cwd/custom/_poetry"
+command -v kind >/dev/null && kind completion zsh > "$cwd/custom/_kind"
+command -v gh >/dev/null && gh completion -s zsh > "$cwd/custom/_gh"
 
 cp -Lrf \
 	"$HOME/google-cloud-sdk/completion.zsh.inc" \

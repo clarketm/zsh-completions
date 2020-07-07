@@ -1,0 +1,3 @@
+#compdef terraform
+
+complete -o nospace -C $(command -v terraform) terraform
