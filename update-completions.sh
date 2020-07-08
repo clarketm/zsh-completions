@@ -43,8 +43,8 @@ command -v gh >/dev/null && gh completion -s zsh > "$cwd/custom/_gh"
 
 cp -Lrf \
 	"$HOME/google-cloud-sdk/completion.zsh.inc" \
-	"$cwd/custom/_gcloud"
-sed -i '1i #compdef gcloud' "$cwd/custom/_gcloud"
+	"$cwd/custom/_gcloud" \
+	&& sed -i '1i #compdef gcloud' "$cwd/custom/_gcloud"
 
 ################################################
 # copy custom/ => src/
