@@ -53,6 +53,12 @@ cp -Lrf \
     "$cwd/custom/_"* "$cwd/custom/"*".bash" \
     "$cwd/src/"
 
+################################################
+# copy override/ => src/
+################################################
+cp -Lrf \
+    "$cwd/override/_"* \
+    "$cwd/src/"
 
 if [ "$1" != "--dry-run" ]; then
 	git pull && git add . && git commit -m "$(date +%F)" && git push origin master || echo "nothing to commit :)"
