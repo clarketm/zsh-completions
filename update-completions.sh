@@ -32,6 +32,10 @@ cp -Lrf \
 ################################################
 # copy various completion files => custom/
 ################################################
+cp -Lrf \
+    "/usr/local/share/zsh/site-functions/_"* \
+ 	"/usr/local/share/zsh/site-functions/"*".bash" \
+    "$cwd/custom/"
 
 command -v poetry >/dev/null && poetry completions zsh > "$cwd/custom/_poetry"
 command -v kind >/dev/null && kind completion zsh > "$cwd/custom/_kind"
@@ -40,11 +44,7 @@ command -v gh >/dev/null && gh completion -s zsh > "$cwd/custom/_gh"
 cp -Lrf \
 	"$HOME/google-cloud-sdk/completion.zsh.inc" \
 	"$cwd/custom/_gcloud"
-
-cp -Lrf \
-    "/usr/local/share/zsh/site-functions/_"* \
- 	"/usr/local/share/zsh/site-functions/"*".bash" \
-    "$cwd/custom/"
+sed -i '1i #compdef gcloud' "$cwd/custom/_gcloud"
 
 ################################################
 # copy custom/ => src/
@@ -60,6 +60,9 @@ cp -Lrf \
     "$cwd/override/_"* \
     "$cwd/src/"
 
+################################################
+# handle options
+################################################
 if [ "$1" != "--dry-run" ]; then
 	git pull && git add . && git commit -m "$(date +%F)" && git push origin master || echo "nothing to commit :)"
 fi
