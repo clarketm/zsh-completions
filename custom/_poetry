@@ -1,6 +1,6 @@
 #compdef poetry
 
-_poetry_778372db16806d52_complete()
+_poetry_a6155fce0781ca63_complete()
 {
     local state com cur
 
@@ -62,7 +62,7 @@ _poetry_778372db16806d52_complete()
             ;;
 
             (export)
-            opts+=("--dev:Include development dependencies." "--extras:Extra sets of dependencies to include." "--format:Format to export to. Currently, only requirements.txt is supported." "--output:The name of the output file." "--with-credentials:Include credentials for extra indices." "--without-hashes:Exclude hashes from the exported file.")
+            opts+=("--dev:Include development dependencies." "--extras:Extra sets of dependencies to include." "--format:Format to export to." "--output:The name of the output file." "--with-credentials:Include credentials for extra indices." "--without-hashes:Exclude hashes from the exported file.")
             ;;
 
             (help)
@@ -131,5 +131,5 @@ _poetry_778372db16806d52_complete()
     esac
 }
 
-_poetry_778372db16806d52_complete "$@"
-compdef _poetry_778372db16806d52_complete /usr/local/Cellar/poetry/1.0.9/bin/poetry
+_poetry_a6155fce0781ca63_complete "$@"
+compdef _poetry_a6155fce0781ca63_complete /usr/local/Cellar/poetry/1.0.5_1/bin/poetry
