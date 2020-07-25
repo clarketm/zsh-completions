@@ -1,3 +1,4 @@
+#compdef gcloud
 autoload -U +X bashcompinit && bashcompinit
 zmodload -i zsh/parameter
 if ! (( $+functions[compdef] )) ; then
