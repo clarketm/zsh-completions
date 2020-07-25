@@ -7,7 +7,7 @@ This project aggregates zsh completions from:
 1. [zsh-users/zsh-completions](https://github.com/zsh-users/zsh-completions)
 2. [zchee/zsh-completions](https://github.com/zchee/zsh-completions)
 3. [nilsonholger/osx-zsh-completions](https://github.com/nilsonholger/osx-zsh-completions)
-4. and *various* other [custom](/custom) or third-party sources.
+4. and *various* other [custom] or third-party sources.
 
 *This projects aims at gathering/developing new completion scripts that are not available in Zsh yet. The scripts may be contributed to the Zsh project when stable enough.*
 
@@ -49,3 +49,5 @@ Add `antigen bundle clarketm/zsh-completions` to your `~/.zshrc`.
 ## License
 Completions use the Zsh license, unless explicitly mentioned in the file header.
 See [LICENSE](https://github.com/zsh-users/zsh-completions/blob/master/LICENSE) for more information.
+
+[custom]: https://github.com/clarketm/zsh-completions/blob/03471ae0d49beb7d90e2900b45e54cbefa353e83/update-completions.sh#L35-L59
