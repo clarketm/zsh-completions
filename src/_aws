@@ -1,4 +1,4 @@
 #compdef aws
 
 autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C $(command -v aws_completer) aws
+complete -C $(command -v aws_completer) aws
