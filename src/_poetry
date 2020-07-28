@@ -1,6 +1,6 @@
 #compdef poetry
 
-_poetry_778372db16806d52_complete()
+_poetry_cc116919fd373083_complete()
 {
     local state com cur
 
@@ -131,5 +131,5 @@ _poetry_778372db16806d52_complete()
     esac
 }
 
-_poetry_778372db16806d52_complete "$@"
-compdef _poetry_778372db16806d52_complete /usr/local/Cellar/poetry/1.0.9/bin/poetry
+_poetry_cc116919fd373083_complete "$@"
+compdef _poetry_cc116919fd373083_complete /usr/local/Cellar/poetry/1.0.10/bin/poetry
