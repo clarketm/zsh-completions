@@ -40,7 +40,7 @@ cp -Lrf \
 	"/usr/local/share/zsh/site-functions/"*".bash" \
 	"$cwd/src/"
 
-command -v poetry >/dev/null && poetry completions zsh >"$cwd/src/_poetry"
+#command -v poetry >/dev/null && poetry completions zsh >"$cwd/src/_poetry"
 command -v kind >/dev/null && kind completion zsh >"$cwd/src/_kind"
 command -v glooctl >/dev/null && glooctl completion zsh >"$cwd/src/_glooctl"
 command -v gh >/dev/null && gh completion -s zsh >"$cwd/src/_gh"
