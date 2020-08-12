@@ -6,6 +6,8 @@ function _skaffold {
 
   _arguments -C \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:' \
     "1: :->cmnds" \
     "*::arg:->args"
@@ -29,7 +31,7 @@ function _skaffold {
       "render:[alpha] Perform all image builds, and output rendered Kubernetes manifests"
       "run:Run a pipeline"
       "schema:List and print json schemas used to validate skaffold.yaml configuration"
-      "survey:Show Skaffold survey url"
+      "survey:Opens a web browser to fill out the Skaffold survey"
       "version:Print the version information"
     )
     _describe "command" commands
@@ -108,6 +110,7 @@ function _skaffold_build {
     '*--insecure-registry[Target registries for built images which are not secure]:' \
     '--kube-context[Deploy to this Kubernetes context]:' \
     '--kubeconfig[Path to the kubeconfig file to use for CLI requests.]:' \
+    '*--mute-logs[mute logs for specified stages in pipeline (build, deploy, status-check, none, all)]:' \
     '(-n --namespace)'{-n,--namespace}'[Run deployments in the specified namespace]:' \
     '(-o --output)'{-o,--output}'[Used in conjunction with --quiet flag. Format output with go-template. For full struct documentation, see https://godoc.org/github.com/GoogleContainerTools/skaffold/cmd/skaffold/app/flags#BuildOutput]:' \
     '(*-p *--profile)'{\*-p,\*--profile}'[Activate profiles by name (prefixed with `-` to disable a profile)]:' \
@@ -119,6 +122,8 @@ function _skaffold_build {
     '(-t --tag)'{-t,--tag}'[The optional custom tag to use for images which overrides the current Tagger configuration]:' \
     '--toot[Emit a terminal beep after the deploy is complete]' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -126,6 +131,8 @@ function _skaffold_completion {
   _arguments \
     '(-h --help)'{-h,--help}'[help for completion]' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:' \
     '1: :("bash" "zsh")'
 }
@@ -136,6 +143,8 @@ function _skaffold_config {
 
   _arguments -C \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:' \
     "1: :->cmnds" \
     "*::arg:->args"
@@ -170,6 +179,8 @@ function _skaffold_config_list {
     '(-c --config)'{-c,--config}'[Path to Skaffold config]:' \
     '(-k --kube-context)'{-k,--kube-context}'[Kubectl context to set values against]:' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -179,6 +190,8 @@ function _skaffold_config_set {
     '(-g --global)'{-g,--global}'[Set value for global config]' \
     '(-k --kube-context)'{-k,--kube-context}'[Kubectl context to set values against]:' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -188,6 +201,8 @@ function _skaffold_config_unset {
     '(-g --global)'{-g,--global}'[Set value for global config]' \
     '(-k --kube-context)'{-k,--kube-context}'[Kubectl context to set values against]:' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -195,6 +210,8 @@ function _skaffold_credits {
   _arguments \
     '(-d --dir)'{-d,--dir}'[destination directory to place third party licenses]:' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -207,11 +224,12 @@ function _skaffold_debug {
     '(-d --default-repo)'{-d,--default-repo}'[Default repository value (overrides global config)]:' \
     '--enable-rpc[Enable gRPC for exposing Skaffold events (true by default for `skaffold dev`)]' \
     '(-f --filename)'{-f,--filename}'[Path or URL to the Skaffold config file]:' \
-    '--force[Recreate Kubernetes resources if necessary for deployment, warning: might cause downtime! (true by default for `skaffold dev`)]' \
+    '--force[Recreate Kubernetes resources if necessary for deployment, warning: might cause downtime!]' \
     '*--insecure-registry[Target registries for built images which are not secure]:' \
     '--kube-context[Deploy to this Kubernetes context]:' \
     '--kubeconfig[Path to the kubeconfig file to use for CLI requests.]:' \
     '(*-l *--label)'{\*-l,\*--label}'[Add custom labels to deployed objects. Set multiple times for multiple labels]:' \
+    '*--mute-logs[mute logs for specified stages in pipeline (build, deploy, status-check, none, all)]:' \
     '(-n --namespace)'{-n,--namespace}'[Run deployments in the specified namespace]:' \
     '--no-prune[Skip removing images and containers built by Skaffold]' \
     '--no-prune-children[Skip removing layers reused by Skaffold]' \
@@ -226,9 +244,14 @@ function _skaffold_debug {
     '--tail[Stream logs from deployed objects (true by default for `skaffold dev` and `skaffold debug`)]' \
     '--toot[Emit a terminal beep after the deploy is complete]' \
     '--trigger[How is change detection triggered? (polling, notify, or manual)]:' \
+    '--wait-for-deletions[Wait for pending deletions to complete before a deployment]' \
+    '--wait-for-deletions-delay[Delay between two checks for pending deletions]:' \
+    '--wait-for-deletions-max[Max duration to wait for pending deletions]:' \
     '(*-w *--watch-image)'{\*-w,\*--watch-image}'[Choose which artifacts to watch. Artifacts with image names that contain the expression will be watched only. Default is to watch sources for all artifacts]:' \
     '(-i --watch-poll-interval)'{-i,--watch-poll-interval}'[Interval (in ms) between two checks for file changes]:' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -243,6 +266,8 @@ function _skaffold_delete {
     '(*-p *--profile)'{\*-p,\*--profile}'[Activate profiles by name (prefixed with `-` to disable a profile)]:' \
     '--profile-auto-activation[Set to false to disable profile auto activation]' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -253,11 +278,12 @@ function _skaffold_deploy {
     '(-d --default-repo)'{-d,--default-repo}'[Default repository value (overrides global config)]:' \
     '--enable-rpc[Enable gRPC for exposing Skaffold events (true by default for `skaffold dev`)]' \
     '(-f --filename)'{-f,--filename}'[Path or URL to the Skaffold config file]:' \
-    '--force[Recreate Kubernetes resources if necessary for deployment, warning: might cause downtime! (true by default for `skaffold dev`)]' \
+    '--force[Recreate Kubernetes resources if necessary for deployment, warning: might cause downtime!]' \
     '(-i --images)'{-i,--images}'[A list of pre-built images to deploy]:' \
     '--kube-context[Deploy to this Kubernetes context]:' \
     '--kubeconfig[Path to the kubeconfig file to use for CLI requests.]:' \
     '(*-l *--label)'{\*-l,\*--label}'[Add custom labels to deployed objects. Set multiple times for multiple labels]:' \
+    '*--mute-logs[mute logs for specified stages in pipeline (build, deploy, status-check, none, all)]:' \
     '(-n --namespace)'{-n,--namespace}'[Run deployments in the specified namespace]:' \
     '--port-forward[Port-forward exposed container ports within pods]' \
     '(*-p *--profile)'{\*-p,\*--profile}'[Activate profiles by name (prefixed with `-` to disable a profile)]:' \
@@ -268,7 +294,12 @@ function _skaffold_deploy {
     '--status-check[Wait for deployed resources to stabilize]' \
     '--tail[Stream logs from deployed objects (true by default for `skaffold dev` and `skaffold debug`)]' \
     '--toot[Emit a terminal beep after the deploy is complete]' \
+    '--wait-for-deletions[Wait for pending deletions to complete before a deployment]' \
+    '--wait-for-deletions-delay[Delay between two checks for pending deletions]:' \
+    '--wait-for-deletions-max[Max duration to wait for pending deletions]:' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -281,11 +312,12 @@ function _skaffold_dev {
     '(-d --default-repo)'{-d,--default-repo}'[Default repository value (overrides global config)]:' \
     '--enable-rpc[Enable gRPC for exposing Skaffold events (true by default for `skaffold dev`)]' \
     '(-f --filename)'{-f,--filename}'[Path or URL to the Skaffold config file]:' \
-    '--force[Recreate Kubernetes resources if necessary for deployment, warning: might cause downtime! (true by default for `skaffold dev`)]' \
+    '--force[Recreate Kubernetes resources if necessary for deployment, warning: might cause downtime!]' \
     '*--insecure-registry[Target registries for built images which are not secure]:' \
     '--kube-context[Deploy to this Kubernetes context]:' \
     '--kubeconfig[Path to the kubeconfig file to use for CLI requests.]:' \
     '(*-l *--label)'{\*-l,\*--label}'[Add custom labels to deployed objects. Set multiple times for multiple labels]:' \
+    '*--mute-logs[mute logs for specified stages in pipeline (build, deploy, status-check, none, all)]:' \
     '(-n --namespace)'{-n,--namespace}'[Run deployments in the specified namespace]:' \
     '--no-prune[Skip removing images and containers built by Skaffold]' \
     '--no-prune-children[Skip removing layers reused by Skaffold]' \
@@ -301,9 +333,14 @@ function _skaffold_dev {
     '--tail[Stream logs from deployed objects (true by default for `skaffold dev` and `skaffold debug`)]' \
     '--toot[Emit a terminal beep after the deploy is complete]' \
     '--trigger[How is change detection triggered? (polling, notify, or manual)]:' \
+    '--wait-for-deletions[Wait for pending deletions to complete before a deployment]' \
+    '--wait-for-deletions-delay[Delay between two checks for pending deletions]:' \
+    '--wait-for-deletions-max[Max duration to wait for pending deletions]:' \
     '(*-w *--watch-image)'{\*-w,\*--watch-image}'[Choose which artifacts to watch. Artifacts with image names that contain the expression will be watched only. Default is to watch sources for all artifacts]:' \
     '(-i --watch-poll-interval)'{-i,--watch-poll-interval}'[Interval (in ms) between two checks for file changes]:' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -315,6 +352,8 @@ function _skaffold_diagnose {
     '--profile-auto-activation[Set to false to disable profile auto activation]' \
     '--yaml-only[Only prints the effective skaffold.yaml configuration]' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -324,12 +363,16 @@ function _skaffold_fix {
     '--overwrite[Overwrite original config with fixed config]' \
     '--version[Target schema version to upgrade to]:' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
 function _skaffold_help {
   _arguments \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -345,12 +388,16 @@ function _skaffold_init {
     '(*-k *--kubernetes-manifest)'{\*-k,\*--kubernetes-manifest}'[A path or a glob pattern to kubernetes manifests (can be non-existent) to be added to the kubectl deployer (overrides detection of kubernetes manifests). Repeat the flag for multiple entries. E.g.: skaffold init -k pod.yaml -k k8s/*.yml]:' \
     '--skip-build[Skip generating build artifacts in Skaffold config]' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
 function _skaffold_options {
   _arguments \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -369,6 +416,8 @@ function _skaffold_render {
     '(*-p *--profile)'{\*-p,\*--profile}'[Activate profiles by name (prefixed with `-` to disable a profile)]:' \
     '--profile-auto-activation[Set to false to disable profile auto activation]' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -381,11 +430,12 @@ function _skaffold_run {
     '(-d --default-repo)'{-d,--default-repo}'[Default repository value (overrides global config)]:' \
     '--enable-rpc[Enable gRPC for exposing Skaffold events (true by default for `skaffold dev`)]' \
     '(-f --filename)'{-f,--filename}'[Path or URL to the Skaffold config file]:' \
-    '--force[Recreate Kubernetes resources if necessary for deployment, warning: might cause downtime! (true by default for `skaffold dev`)]' \
+    '--force[Recreate Kubernetes resources if necessary for deployment, warning: might cause downtime!]' \
     '*--insecure-registry[Target registries for built images which are not secure]:' \
     '--kube-context[Deploy to this Kubernetes context]:' \
     '--kubeconfig[Path to the kubeconfig file to use for CLI requests.]:' \
     '(*-l *--label)'{\*-l,\*--label}'[Add custom labels to deployed objects. Set multiple times for multiple labels]:' \
+    '*--mute-logs[mute logs for specified stages in pipeline (build, deploy, status-check, none, all)]:' \
     '(-n --namespace)'{-n,--namespace}'[Run deployments in the specified namespace]:' \
     '--no-prune[Skip removing images and containers built by Skaffold]' \
     '--no-prune-children[Skip removing layers reused by Skaffold]' \
@@ -393,6 +443,7 @@ function _skaffold_run {
     '(*-p *--profile)'{\*-p,\*--profile}'[Activate profiles by name (prefixed with `-` to disable a profile)]:' \
     '--profile-auto-activation[Set to false to disable profile auto activation]' \
     '--render-only[Print rendered Kubernetes manifests instead of deploying them]' \
+    '--render-output[Writes '\''--render-only'\'' output to the specified file]:' \
     '--rpc-http-port[tcp port to expose event REST API over HTTP]:' \
     '--rpc-port[tcp port to expose event API]:' \
     '--skip-tests[Whether to skip the tests after building]' \
@@ -400,7 +451,12 @@ function _skaffold_run {
     '(-t --tag)'{-t,--tag}'[The optional custom tag to use for images which overrides the current Tagger configuration]:' \
     '--tail[Stream logs from deployed objects (true by default for `skaffold dev` and `skaffold debug`)]' \
     '--toot[Emit a terminal beep after the deploy is complete]' \
+    '--wait-for-deletions[Wait for pending deletions to complete before a deployment]' \
+    '--wait-for-deletions-delay[Delay between two checks for pending deletions]:' \
+    '--wait-for-deletions-max[Max duration to wait for pending deletions]:' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -410,6 +466,8 @@ function _skaffold_schema {
 
   _arguments -C \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:' \
     "1: :->cmnds" \
     "*::arg:->args"
@@ -437,6 +495,8 @@ function _skaffold_schema {
 function _skaffold_schema_get {
   _arguments \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -444,12 +504,16 @@ function _skaffold_schema_list {
   _arguments \
     '(-o --output)'{-o,--output}'[Type of output: `plain` or `json`.]:' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
 function _skaffold_survey {
   _arguments \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
@@ -457,6 +521,8 @@ function _skaffold_version {
   _arguments \
     '(-o --output)'{-o,--output}'[Format output with go-template. For full struct documentation, see https://godoc.org/github.com/GoogleContainerTools/skaffold/pkg/skaffold/version#Info]:' \
     '--color[Specify the default output color in ANSI escape codes]:' \
+    '--interactive[Allow user prompts for more information]' \
+    '--update-check[Check for a more recent version of Skaffold]' \
     '(-v --verbosity)'{-v,--verbosity}'[Log level (debug, info, warn, error, fatal, panic)]:'
 }
 
