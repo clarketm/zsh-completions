@@ -13,17 +13,17 @@ function _tkn {
   case $state in
   cmnds)
     commands=(
-      "clustertask:Manage clustertasks"
+      "clustertask:Manage ClusterTasks"
       "clustertriggerbinding:Manage clustertriggerbindings"
       "completion:Prints shell completion scripts"
       "condition:Manage conditions"
       "eventlistener:Manage eventlisteners"
       "help:Help about any command"
       "pipeline:Manage pipelines"
-      "pipelinerun:Manage pipelineruns"
+      "pipelinerun:Manage PipelineRuns"
       "resource:Manage pipeline resources"
-      "task:Manage tasks"
-      "taskrun:Manage taskruns"
+      "task:Manage Tasks"
+      "taskrun:Manage TaskRuns"
       "triggerbinding:Manage triggerbindings"
       "triggertemplate:Manage triggertemplates"
       "version:Prints version information"
@@ -92,10 +92,10 @@ function _tkn_clustertask {
   case $state in
   cmnds)
     commands=(
-      "delete:Delete clustertask resources in a cluster"
-      "describe:Describes a clustertask"
-      "list:Lists clustertasks in a namespace"
-      "start:Start clustertasks"
+      "delete:Delete ClusterTasks in a cluster"
+      "describe:Describe a ClusterTask"
+      "list:Lists ClusterTasks"
+      "start:Start ClusterTasks"
     )
     _describe "command" commands
     ;;
@@ -119,7 +119,7 @@ function _tkn_clustertask {
 
 function _tkn_clustertask_delete {
   _arguments \
-    '--all[Delete all clustertasks (default: false)]' \
+    '--all[Delete all ClusterTasks (default: false)]' \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
     '(-f --force)'{-f,--force}'[Whether to force deletion (default: false)]' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
@@ -154,16 +154,16 @@ function _tkn_clustertask_list {
 
 function _tkn_clustertask_start {
   _arguments \
-    '--dry-run[preview taskrun without running it]' \
+    '--dry-run[preview TaskRun without running it]' \
     '(*-i *--inputresource)'{\*-i,\*--inputresource}'[pass the input resource name and ref as name=ref]:()' \
     '(*-l *--labels)'{\*-l,\*--labels}'[pass labels as label=value.]:()' \
-    '(-L --last)'{-L,--last}'[re-run the clustertask using last taskrun values]' \
-    '--output[format of taskrun dry-run (yaml or json)]:()' \
+    '(-L --last)'{-L,--last}'[re-run the ClusterTask using last TaskRun values]' \
+    '--output[format of TaskRun dry-run (yaml or json)]:()' \
     '(*-o *--outputresource)'{\*-o,\*--outputresource}'[pass the output resource name and ref as name=ref]:()' \
     '(*-p *--param)'{\*-p,\*--param}'[pass the param as key=value for string type, or key=value1,value2,... for array type]:()' \
     '(-s --serviceaccount)'{-s,--serviceaccount}'[pass the serviceaccount name]: :__kubectl_get_serviceaccount' \
-    '--showlog[show logs right after starting the clustertask]' \
-    '--timeout[timeout for taskrun]:()' \
+    '--showlog[show logs right after starting the ClusterTask]' \
+    '--timeout[timeout for TaskRun]:()' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
@@ -410,11 +410,11 @@ function _tkn_pipeline {
   case $state in
   cmnds)
     commands=(
-      "delete:Delete pipelines in a namespace"
-      "describe:Describes a pipeline in a namespace"
-      "list:Lists pipelines in a namespace"
-      "logs:Show pipeline logs"
-      "start:Start pipelines"
+      "delete:Delete Pipelines in a namespace"
+      "describe:Describes a Pipeline in a namespace"
+      "list:Lists Pipelines in a namespace"
+      "logs:Show Pipeline logs"
+      "start:Start Pipelines"
     )
     _describe "command" commands
     ;;
@@ -445,7 +445,7 @@ function _tkn_pipeline_delete {
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
     '(-f --force)'{-f,--force}'[Whether to force deletion (default: false)]' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
-    '--prs[Whether to delete pipeline(s) and related resources (pipelineruns) (default: false)]' \
+    '--prs[Whether to delete Pipeline(s) and related resources (PipelineRuns) (default: false)]' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
@@ -468,7 +468,7 @@ function _tkn_pipeline_describe {
 
 function _tkn_pipeline_list {
   _arguments \
-    '(-A --all-namespaces)'{-A,--all-namespaces}'[list pipelines from all namespaces]' \
+    '(-A --all-namespaces)'{-A,--all-namespaces}'[list Pipelines from all namespaces]' \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
     '--no-headers[do not print column headers with output (default print column headers with output)]' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
@@ -483,8 +483,8 @@ function _tkn_pipeline_logs {
   _arguments \
     '(-a --all)'{-a,--all}'[show all logs including init steps injected by tekton]' \
     '(-f --follow)'{-f,--follow}'[stream live logs]' \
-    '(-L --last)'{-L,--last}'[show logs for last run]' \
-    '--limit[lists number of pipelineruns]:()' \
+    '(-L --last)'{-L,--last}'[show logs for last PipelineRun]' \
+    '--limit[lists number of PipelineRuns]:()' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
@@ -494,18 +494,18 @@ function _tkn_pipeline_logs {
 
 function _tkn_pipeline_start {
   _arguments \
-    '--dry-run[preview pipelinerun without running it]' \
-    '(-f --filename)'{-f,--filename}'[local or remote file name containing a pipeline definition to start a pipelinerun]:()' \
+    '--dry-run[preview PipelineRun without running it]' \
+    '(-f --filename)'{-f,--filename}'[local or remote file name containing a Pipeline definition to start a PipelineRun]:()' \
     '(*-l *--labels)'{\*-l,\*--labels}'[pass labels as label=value.]:()' \
-    '(-L --last)'{-L,--last}'[re-run the pipeline using last pipelinerun values]' \
-    '--output[format of pipelinerun dry-run (yaml or json)]:()' \
+    '(-L --last)'{-L,--last}'[re-run the Pipeline using last PipelineRun values]' \
+    '--output[format of PipelineRun dry-run (yaml or json)]:()' \
     '(*-p *--param)'{\*-p,\*--param}'[pass the param as key=value for string type, or key=value1,value2,... for array type]:()' \
-    '--prefix-name[specify a prefix for the pipelinerun name (must be lowercase alphanumeric characters)]:()' \
+    '--prefix-name[specify a prefix for the PipelineRun name (must be lowercase alphanumeric characters)]:()' \
     '(*-r *--resource)'{\*-r,\*--resource}'[pass the resource name and ref as name=ref]:()' \
     '(-s --serviceaccount)'{-s,--serviceaccount}'[pass the serviceaccount name]: :__kubectl_get_serviceaccount' \
-    '--showlog[show logs right after starting the pipeline]' \
+    '--showlog[show logs right after starting the Pipeline]' \
     '*--task-serviceaccount[pass the service account corresponding to the task]: :__kubectl_get_serviceaccount' \
-    '--timeout[timeout for pipelinerun]:()' \
+    '--timeout[timeout for PipelineRun]:()' \
     '--use-param-defaults[use default parameter values without prompting for input]' \
     '--use-pipelinerun[use this pipelinerun values to re-run the pipeline. ]: :__tkn_get_pipelinerun' \
     '(*-w *--workspace)'{\*-w,\*--workspace}'[pass the workspace.]:()' \
@@ -532,10 +532,10 @@ function _tkn_pipelinerun {
   cmnds)
     commands=(
       "cancel:Cancel a PipelineRun in a namespace"
-      "delete:Delete pipelineruns in a namespace"
-      "describe:Describe a pipelinerun in a namespace"
-      "list:Lists pipelineruns in a namespace"
-      "logs:Show the logs of PipelineRun"
+      "delete:Delete PipelineRuns in a namespace"
+      "describe:Describe a PipelineRun in a namespace"
+      "list:Lists PipelineRuns in a namespace"
+      "logs:Show the logs of a PipelineRun"
     )
     _describe "command" commands
     ;;
@@ -571,12 +571,12 @@ function _tkn_pipelinerun_cancel {
 
 function _tkn_pipelinerun_delete {
   _arguments \
-    '--all[Delete all pipelineruns in a namespace (default: false)]' \
+    '--all[Delete all PipelineRuns in a namespace (default: false)]' \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
     '(-f --force)'{-f,--force}'[Whether to force deletion (default: false)]' \
-    '--keep[Keep n most recent number of pipelineruns]:()' \
+    '--keep[Keep n most recent number of PipelineRuns]:()' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
-    '(-p --pipeline)'{-p,--pipeline}'[The name of a pipeline whose pipelineruns should be deleted (does not delete the pipeline)]:()' \
+    '(-p --pipeline)'{-p,--pipeline}'[The name of a Pipeline whose PipelineRuns should be deleted (does not delete the Pipeline)]:()' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
@@ -588,9 +588,9 @@ function _tkn_pipelinerun_delete {
 function _tkn_pipelinerun_describe {
   _arguments \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
-    '(-F --fzf)'{-F,--fzf}'[use fzf to select a pipelinerun to describe]' \
-    '(-L --last)'{-L,--last}'[show description for last pipelinerun]' \
-    '--limit[lists number of pipelineruns when selecting a pipelinerun to describe]:()' \
+    '(-F --fzf)'{-F,--fzf}'[use fzf to select a PipelineRun to describe]' \
+    '(-L --last)'{-L,--last}'[show description for last PipelineRun]' \
+    '--limit[lists number of PipelineRuns when selecting a PipelineRun to describe]:()' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
@@ -602,13 +602,13 @@ function _tkn_pipelinerun_describe {
 
 function _tkn_pipelinerun_list {
   _arguments \
-    '(-A --all-namespaces)'{-A,--all-namespaces}'[list pipelineruns from all namespaces]' \
+    '(-A --all-namespaces)'{-A,--all-namespaces}'[list PipelineRuns from all namespaces]' \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
     '--label[A selector (label query) to filter on, supports '\''='\'', '\''=='\'', and '\''!='\'']:()' \
-    '--limit[limit pipelineruns listed (default: return all pipelineruns)]:()' \
+    '--limit[limit PipelineRuns listed (default: return all PipelineRuns)]:()' \
     '--no-headers[do not print column headers with output (default print column headers with output)]' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
-    '--reverse[list pipelineruns in reverse order]' \
+    '--reverse[list PipelineRuns in reverse order]' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
@@ -620,10 +620,10 @@ function _tkn_pipelinerun_logs {
   _arguments \
     '(-a --all)'{-a,--all}'[show all logs including init steps injected by tekton]' \
     '(-f --follow)'{-f,--follow}'[stream live logs]' \
-    '(-F --fzf)'{-F,--fzf}'[use fzf to select a pipelinerun]' \
-    '(-L --last)'{-L,--last}'[show logs for last pipelinerun]' \
-    '--limit[lists number of pipelineruns]:()' \
-    '(*-t *--task)'{\*-t,\*--task}'[show logs for mentioned tasks only]:()' \
+    '(-F --fzf)'{-F,--fzf}'[use fzf to select a PipelineRun]' \
+    '(-L --last)'{-L,--last}'[show logs for last PipelineRun]' \
+    '--limit[lists number of PipelineRuns]:()' \
+    '(*-t *--task)'{\*-t,\*--task}'[show logs for mentioned Tasks only]:()' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
@@ -737,11 +737,11 @@ function _tkn_task {
   case $state in
   cmnds)
     commands=(
-      "delete:Delete task resources in a namespace"
-      "describe:Describes a task in a namespace"
-      "list:Lists tasks in a namespace"
-      "logs:Show task logs"
-      "start:Start tasks"
+      "delete:Delete Tasks in a namespace"
+      "describe:Describe a Task in a namespace"
+      "list:Lists Tasks in a namespace"
+      "logs:Show Task logs"
+      "start:Start Tasks"
     )
     _describe "command" commands
     ;;
@@ -795,7 +795,7 @@ function _tkn_task_describe {
 
 function _tkn_task_list {
   _arguments \
-    '(-A --all-namespaces)'{-A,--all-namespaces}'[list tasks from all namespaces]' \
+    '(-A --all-namespaces)'{-A,--all-namespaces}'[list Tasks from all namespaces]' \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
     '--no-headers[do not print column headers with output (default print column headers with output)]' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
@@ -810,8 +810,8 @@ function _tkn_task_logs {
   _arguments \
     '(-a --all)'{-a,--all}'[show all logs including init steps injected by tekton]' \
     '(-f --follow)'{-f,--follow}'[stream live logs]' \
-    '(-L --last)'{-L,--last}'[show logs for last taskrun]' \
-    '--limit[lists number of taskruns]:()' \
+    '(-L --last)'{-L,--last}'[show logs for last TaskRun]' \
+    '--limit[lists number of TaskRuns]:()' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
@@ -821,19 +821,20 @@ function _tkn_task_logs {
 
 function _tkn_task_start {
   _arguments \
-    '--dry-run[preview taskrun without running it]' \
-    '(-f --filename)'{-f,--filename}'[local or remote file name containing a task definition to start a taskrun]:()' \
+    '--dry-run[preview TaskRun without running it]' \
+    '(-f --filename)'{-f,--filename}'[local or remote file name containing a Task definition to start a TaskRun]:()' \
     '(*-i *--inputresource)'{\*-i,\*--inputresource}'[pass the input resource name and ref as name=ref]:()' \
     '(*-l *--labels)'{\*-l,\*--labels}'[pass labels as label=value.]:()' \
-    '(-L --last)'{-L,--last}'[re-run the task using last taskrun values]' \
-    '--output[format of taskrun dry-run (yaml or json)]:()' \
+    '(-L --last)'{-L,--last}'[re-run the Task using last TaskRun values]' \
+    '--output[format of TaskRun dry-run (yaml or json)]:()' \
     '(*-o *--outputresource)'{\*-o,\*--outputresource}'[pass the output resource name and ref as name=ref]:()' \
     '(*-p *--param)'{\*-p,\*--param}'[pass the param as key=value for string type, or key=value1,value2,... for array type]:()' \
-    '--prefix-name[specify a prefix for the taskrun name (must be lowercase alphanumeric characters)]:()' \
+    '--prefix-name[specify a prefix for the TaskRun name (must be lowercase alphanumeric characters)]:()' \
     '(-s --serviceaccount)'{-s,--serviceaccount}'[pass the serviceaccount name]: :__kubectl_get_serviceaccount' \
-    '--showlog[show logs right after starting the task]' \
-    '--timeout[timeout for taskrun]:()' \
-    '--use-taskrun[specify a taskrun name to use its values to re-run the taskrun]: :__tkn_get_taskrun' \
+    '--showlog[show logs right after starting the Task]' \
+    '--timeout[timeout for TaskRun]:()' \
+    '--use-param-defaults[use default parameter values without prompting for input]' \
+    '--use-taskrun[specify a TaskRun name to use its values to re-run the TaskRun]: :__tkn_get_taskrun' \
     '(*-w *--workspace)'{\*-w,\*--workspace}'[pass the workspace.]:()' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
@@ -858,10 +859,10 @@ function _tkn_taskrun {
   cmnds)
     commands=(
       "cancel:Cancel a TaskRun in a namespace"
-      "delete:Delete taskruns in a namespace"
-      "describe:Describe a taskrun in a namespace"
+      "delete:Delete TaskRuns in a namespace"
+      "describe:Describe a TaskRun in a namespace"
       "list:Lists TaskRuns in a namespace"
-      "logs:Show taskruns logs"
+      "logs:Show TaskRuns logs"
     )
     _describe "command" commands
     ;;
@@ -897,12 +898,12 @@ function _tkn_taskrun_cancel {
 
 function _tkn_taskrun_delete {
   _arguments \
-    '--all[Delete all taskruns in a namespace (default: false)]' \
+    '--all[Delete all TaskRuns in a namespace (default: false)]' \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
     '(-f --force)'{-f,--force}'[Whether to force deletion (default: false)]' \
-    '--keep[Keep n most recent number of taskruns]:()' \
+    '--keep[Keep n most recent number of TaskRuns]:()' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
-    '(-t --task)'{-t,--task}'[The name of a task whose taskruns should be deleted (does not delete the task)]:()' \
+    '(-t --task)'{-t,--task}'[The name of a Task whose TaskRuns should be deleted (does not delete the task)]:()' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
@@ -915,8 +916,8 @@ function _tkn_taskrun_describe {
   _arguments \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
     '(-F --fzf)'{-F,--fzf}'[use fzf to select a taskrun to describe]' \
-    '(-L --last)'{-L,--last}'[show description for last taskrun]' \
-    '--limit[lists number of taskruns when selecting a taskrun to describe]:()' \
+    '(-L --last)'{-L,--last}'[show description for last TaskRun]' \
+    '--limit[lists number of TaskRuns when selecting a TaskRun to describe]:()' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
@@ -928,13 +929,13 @@ function _tkn_taskrun_describe {
 
 function _tkn_taskrun_list {
   _arguments \
-    '(-A --all-namespaces)'{-A,--all-namespaces}'[list taskruns from all namespaces]' \
+    '(-A --all-namespaces)'{-A,--all-namespaces}'[list TaskRuns from all namespaces]' \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
     '--label[A selector (label query) to filter on, supports '\''='\'', '\''=='\'', and '\''!='\'']:()' \
-    '--limit[limit taskruns listed (default: return all taskruns)]:()' \
+    '--limit[limit TaskRuns listed (default: return all TaskRuns)]:()' \
     '--no-headers[do not print column headers with output (default print column headers with output)]' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
-    '--reverse[list taskruns in reverse order]' \
+    '--reverse[list TaskRuns in reverse order]' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
@@ -946,9 +947,9 @@ function _tkn_taskrun_logs {
   _arguments \
     '(-a --all)'{-a,--all}'[show all logs including init steps injected by tekton]' \
     '(-f --follow)'{-f,--follow}'[stream live logs]' \
-    '(-F --fzf)'{-F,--fzf}'[use fzf to select a taskrun]' \
-    '(-L --last)'{-L,--last}'[show logs for last taskrun]' \
-    '--limit[lists number of taskruns]:()' \
+    '(-F --fzf)'{-F,--fzf}'[use fzf to select a TaskRun]' \
+    '(-L --last)'{-L,--last}'[show logs for last TaskRun]' \
+    '--limit[lists number of TaskRuns]:()' \
     '(*-s *--step)'{\*-s,\*--step}'[show logs for mentioned steps only]:()' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \

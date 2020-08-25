@@ -328,6 +328,7 @@ function _glooctl_create_secret {
       "apikey:Create an ApiKey secret with the given name (Enterprise)"
       "aws:Create an AWS secret with the given name"
       "azure:Create an Azure secret with the given name"
+      "header:Create a header secret with the given name"
       "oauth:Create an OAuth secret with the given name (Enterprise)"
       "tls:Create a secret with the given name"
     )
@@ -344,6 +345,9 @@ function _glooctl_create_secret {
     ;;
   azure)
     _glooctl_create_secret_azure
+    ;;
+  header)
+    _glooctl_create_secret_header
     ;;
   oauth)
     _glooctl_create_secret_oauth
@@ -416,6 +420,34 @@ function _glooctl_create_secret_aws {
 function _glooctl_create_secret_azure {
   _arguments \
     '*--api-keys[comma-separated list of azure api key=value entries]:' \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '--dry-run[print kubernetes-formatted yaml rather than creating or updating a resource]' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--name[name of the resource to read or write]:' \
+    '(-n --namespace)'{-n,--namespace}'[namespace for reading or writing resources]:' \
+    '(-o --output)'{-o,--output}'[output format: (yaml, json, table, kube-yaml, wide)]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
+    '--use-vault[use Vault Key-Value storage as the backend for reading and writing secrets]' \
+    '--vault-address[address of the Vault server. This should be a complete  URL such as "http://vault.example.com". Use with --use-vault]:' \
+    '--vault-ca-cert[CACert is the path to a PEM-encoded CA cert file to use to verify the Vault server SSL certificate.Use with --use-vault]:' \
+    '--vault-ca-path[CAPath is the path to a directory of PEM-encoded CA cert files to verify the Vault server SSL certificate.Use with --use-vault]:' \
+    '--vault-client-cert[ClientCert is the path to the certificate for Vault communication.Use with --use-vault]:' \
+    '--vault-client-key[ClientKey is the path to the private key for Vault communication.Use with --use-vault]:' \
+    '--vault-root-key[key prefix for for Vault key-value storage.]:' \
+    '--vault-tls-insecure[Insecure enables or disables SSL verification.Use with --use-vault]' \
+    '--vault-tls-server-name[TLSServerName, if set, is used to set the SNI host when connecting via TLS.Use with --use-vault]:' \
+    '--vault-token[address of the Vault server. This should be a complete  URL such as "http://vault.example.com". Use with --use-vault]:'
+}
+
+function _glooctl_create_secret_header {
+  _arguments \
+    '*--headers[comma-separated list of header name=value entries]:' \
     '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
     '--consul-address[address of the Consul server. Use with --use-consul]:' \
     '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
