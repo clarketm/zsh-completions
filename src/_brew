@@ -62,8 +62,15 @@ __brew_formulae() {
 
 __brew_installed_formulae() {
   local -a formulae
-  formulae=($(brew list))
+  formulae=($(brew list --formula))
   _describe -t formulae 'installed formulae' formulae
+}
+
+__brew_installed_casks() {
+  local -a list
+  local expl
+  list=( $(brew list --cask) )
+  _wanted list expl 'installed casks' compadd -a list
 }
 
 __brew_outdated_formulae() {
@@ -493,15 +500,39 @@ _brew_linkage() {
 # brew list, ls [--full-name]:
 # brew list, ls --unbrewed:
 # brew list, ls [--versions [--multiple]] [--pinned] [formulae]:
+# brew list, ls [--cask|--formula]:
 _brew_list() {
   local state
   _arguments \
-    '--full-name[print formulae with fully-qualified names]' \
-    '--unbrewed[files in brew --prefix not controlled by brew]' \
-    '--pinned[list all versions of pinned formulae]' \
-    '--versions[list all installed versions of a formula]' \
-    '--multiple[only show formulae with multiple versions installed]' \
-    '*:: :__brew_installed_formulae'
+    - formulae \
+      '--formula[list install formulae]' \
+      '--full-name[print formulae with fully-qualified names]' \
+      '--unbrewed[files in brew --prefix not controlled by brew]' \
+      '--pinned[list all versions of pinned formulae]' \
+      '--versions[list all installed versions of a formula]' \
+      '--multiple[only show formulae with multiple versions installed]' \
+      '*:: :__brew_installed_formulae' \
+    - cask \
+      '--cask[list installed Casks]' \
+      '*:: :__brew_installed_casks'
+
+}
+
+# brew livecheck [--verbose] [--quiet] [--debug] [--full-name] [--tap user/repo]
+#                [--installed] [--json] [--all] [--newer-only] formulae
+_brew_livecheck() {
+  _arguments \
+    '--full-name[Print formulae with fully-qualified name]' \
+    '--tap[Check the formulae within the given tap, specified as user/repo]' \
+    '--all[Check all available formulae]' \
+    '--installed[Check formulae that are currently installed]' \
+    '--newer-only[Show the latest version only if it is newer than the formula]' \
+    '--json[Output information in JSON format]' \
+    '(--quiet,-q)'{--quiet,-q}'[Suppress warnings, do not print a progress bar for JSON output]' \
+    '(--debug,-d)'{--debug,-d}'[Display any debugging information]' \
+    '(--verbose,-v)'{--verbose,-v}'[Make some output more verbose]' \
+    '(--help,-h)'{--help,-h}'[Show the help message]' \
+    '*:: :__brew_formulae'
 }
 
 # brew log [git-log-options] formula ...:
@@ -542,13 +573,17 @@ _brew_options() {
     '(--all --installed): :__brew_formulae'
 }
 
-# brew outdated [--quiet|--verbose|--json=v1] [--fetch-HEAD]:
+# brew outdated [--quiet|--verbose|--json=v1] [--fetch-HEAD] [--cask]:
 _brew_outdated() {
   _arguments \
-    '(--quiet --verbose --json)--quiet[list only the names of outdated brews]' \
-    '(--quiet --verbose --json)--verbose[display detailed version information]' \
-    '(--quiet --verbose --json)--json=-[output in JSON format]:version:(v1)' \
-    '--fetch-HEAD[detect if the HEAD installation of the formula is outdated]'
+    - formulae \
+      '(--quiet --verbose --json)--quiet[list only the names of outdated brews]' \
+      '(--quiet --verbose --json)--verbose[display detailed version information]' \
+      '(--quiet --verbose --json)--json=-[output in JSON format]:version:(v1)' \
+      '--fetch-HEAD[detect if the HEAD installation of the formula is outdated]' \
+    - cask \
+      '--cask[list outdated Casks]' \
+      '--greedy[also list Casks with auto_updates or version \:latest]'
 }
 
 # brew pin formulae:
@@ -573,7 +608,7 @@ _brew_pull() {
     '--resolve[allow user to resolve patches that fail to apply]' \
     '--branch-okay[do not warn on pulling branches other than master]' \
     '--no-pbcopy[do not copy anything to the system]' \
-    '--no-publish[do no publish bottles to Bintray]' \
+    '--no-publish[do not publish bottles to Bintray]' \
     '*:patch source: '
 }
 
@@ -617,11 +652,13 @@ _brew_reinstall() {
 
 # brew search, -S:
 # brew search [--desc] text|/text/:
-# brew search (--debian|--fedora|--fink|--macports|--opensuse|--ubuntu) text:
+# brew search (--cask|--debian|--fedora|--fink|--macports|--opensuse|--ubuntu) text:
 _brew_search() {
   _arguments \
-    '(--debian --fedora --fink --macports --opensuse --ubuntu)--desc[include description for each package]:text: ' \
-    '(--desc --debian --fedora --fink --macports --opensuse --ubuntu)'{--debian,--fedora,--fink,--macports,--opensuse,--ubuntu}'[search for text in given package manager''s list]'
+    '(--cask --debian --fedora --fink --macports --opensuse --ubuntu)--desc[include description for each package]:text: ' \
+    '(--desc --cask --debian --fedora --fink --macports --opensuse --ubuntu)'{--debian,--fedora,--fink,--macports,--opensuse,--ubuntu}'[search for text in given package manager''s list]' \
+    '(--desc --cask --debian --fedora --fink --macports --opensuse 
+    --ubuntu)--cask[search for text in Casks list]'
 }
 
 # brew sh [--env=std]:
@@ -789,6 +826,7 @@ _brew_update_test() {
 # install-options is copied from brew install
 _brew_upgrade() {
   _arguments \
+  '--cask[upgrade installed Casks with newer versions]' \
   '--cleanup[remove previously installed formula version(s)]' \
   '--fetch-HEAD[detect if the HEAD installation of the formula is outdated]' \
   - normal-install \
