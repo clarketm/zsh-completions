@@ -14,18 +14,19 @@ function _tkn {
   cmnds)
     commands=(
       "clustertask:Manage ClusterTasks"
-      "clustertriggerbinding:Manage clustertriggerbindings"
+      "clustertriggerbinding:Manage ClusterTriggerBindings"
       "completion:Prints shell completion scripts"
-      "condition:Manage conditions"
-      "eventlistener:Manage eventlisteners"
+      "condition:Manage Conditions"
+      "eventlistener:Manage EventListeners"
       "help:Help about any command"
+      "hub:Interact with tekton hub"
       "pipeline:Manage pipelines"
       "pipelinerun:Manage PipelineRuns"
       "resource:Manage pipeline resources"
       "task:Manage Tasks"
       "taskrun:Manage TaskRuns"
-      "triggerbinding:Manage triggerbindings"
-      "triggertemplate:Manage triggertemplates"
+      "triggerbinding:Manage TriggerBindings"
+      "triggertemplate:Manage TriggerTemplates"
       "version:Prints version information"
     )
     _describe "command" commands
@@ -50,6 +51,9 @@ function _tkn {
     ;;
   help)
     _tkn_help
+    ;;
+  hub)
+    _tkn_hub
     ;;
   pipeline|p|pipelines)
     _tkn_pipeline
@@ -85,7 +89,7 @@ function _tkn_clustertask {
   _arguments -C \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     "1: :->cmnds" \
     "*::arg:->args"
 
@@ -127,7 +131,7 @@ function _tkn_clustertask_delete {
     '--trs[Whether to delete ClusterTask(s) and related resources (TaskRuns) (default: false)]' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_clustertasks'
 }
 
@@ -138,18 +142,19 @@ function _tkn_clustertask_describe {
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_clustertasks'
 }
 
 function _tkn_clustertask_list {
   _arguments \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
+    '--no-headers[do not print column headers with output (default print column headers with output)]' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
 }
 
 function _tkn_clustertask_start {
@@ -161,13 +166,18 @@ function _tkn_clustertask_start {
     '--output[format of TaskRun dry-run (yaml or json)]:()' \
     '(*-o *--outputresource)'{\*-o,\*--outputresource}'[pass the output resource name and ref as name=ref]:()' \
     '(*-p *--param)'{\*-p,\*--param}'[pass the param as key=value for string type, or key=value1,value2,... for array type]:()' \
+    '--pod-template[local or remote file containing a PodTemplate definition]:()' \
+    '--prefix-name[specify a prefix for the TaskRun name (must be lowercase alphanumeric characters)]:()' \
     '(-s --serviceaccount)'{-s,--serviceaccount}'[pass the serviceaccount name]: :__kubectl_get_serviceaccount' \
     '--showlog[show logs right after starting the ClusterTask]' \
     '--timeout[timeout for TaskRun]:()' \
+    '--use-param-defaults[use default parameter values without prompting for input]' \
+    '--use-taskrun[specify a TaskRun name to use its values to re-run the TaskRun]: :__tkn_get_taskrun' \
+    '(*-w *--workspace)'{\*-w,\*--workspace}'[pass one or more workspaces to map to the corresponding physical volumes as name=name,claimName=pvcName or name=name,emptyDir=]:()' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
-    '1: :__tkn_get_clustertask'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
+    '1: :__tkn_get_clustertasks'
 }
 
 
@@ -177,16 +187,16 @@ function _tkn_clustertriggerbinding {
   _arguments -C \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     "1: :->cmnds" \
     "*::arg:->args"
 
   case $state in
   cmnds)
     commands=(
-      "delete:Delete clustertriggerbindings"
-      "describe:Describes a clustertriggerbinding"
-      "list:Lists clustertriggerbindings in a namespace"
+      "delete:Delete ClusterTriggerBindings"
+      "describe:Describes a ClusterTriggerBinding"
+      "list:Lists ClusterTriggerBindings in a namespace"
     )
     _describe "command" commands
     ;;
@@ -214,7 +224,7 @@ function _tkn_clustertriggerbinding_delete {
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_clustertriggerbinding'
 }
 
@@ -225,18 +235,19 @@ function _tkn_clustertriggerbinding_describe {
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_clustertriggerbindings'
 }
 
 function _tkn_clustertriggerbinding_list {
   _arguments \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
+    '--no-headers[do not print column headers with output (default print column headers with output)]' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
 }
 
 function _tkn_completion {
@@ -253,16 +264,16 @@ function _tkn_condition {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     "1: :->cmnds" \
     "*::arg:->args"
 
   case $state in
   cmnds)
     commands=(
-      "delete:Delete a condition in a namespace"
+      "delete:Delete Conditions in a namespace"
       "describe:Describe Conditions in a namespace"
-      "list:Lists conditions in a namespace"
+      "list:Lists Conditions in a namespace"
     )
     _describe "command" commands
     ;;
@@ -291,7 +302,7 @@ function _tkn_condition_delete {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_condition'
 }
 
@@ -303,19 +314,21 @@ function _tkn_condition_describe {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_condition'
 }
 
 function _tkn_condition_list {
   _arguments \
+    '(-A --all-namespaces)'{-A,--all-namespaces}'[list Conditions from all namespaces]' \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
+    '--no-headers[do not print column headers with output (default print column headers with output)]' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
 }
 
 
@@ -326,7 +339,7 @@ function _tkn_eventlistener {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     "1: :->cmnds" \
     "*::arg:->args"
 
@@ -335,7 +348,8 @@ function _tkn_eventlistener {
     commands=(
       "delete:Delete EventListeners in a namespace"
       "describe:Describe EventListener in a namespace"
-      "list:Lists eventlisteners in a namespace"
+      "list:Lists EventListeners in a namespace"
+      "logs:Show EventListener logs"
     )
     _describe "command" commands
     ;;
@@ -351,6 +365,9 @@ function _tkn_eventlistener {
   list|ls)
     _tkn_eventlistener_list
     ;;
+  logs)
+    _tkn_eventlistener_logs
+    ;;
   esac
 }
 
@@ -364,7 +381,7 @@ function _tkn_eventlistener_delete {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_eventlistener'
 }
 
@@ -376,23 +393,330 @@ function _tkn_eventlistener_describe {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_eventlistener'
 }
 
 function _tkn_eventlistener_list {
   _arguments \
+    '(-A --all-namespaces)'{-A,--all-namespaces}'[list EventListeners from all namespaces]' \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
+    '--no-headers[do not print column headers with output (default print column headers with output)]' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
+}
+
+function _tkn_eventlistener_logs {
+  _arguments \
+    '(-t --tail)'{-t,--tail}'[Number of most recent log lines to show. Specify -1 for all logs from each pod.]:()' \
+    '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
+    '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
+    '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
+    '1: :__tkn_get_eventlistener'
 }
 
 function _tkn_help {
   _arguments
+}
+
+
+function _tkn_hub {
+  local -a commands
+
+  _arguments -C \
+    '--api-server[Hub API Server URL]:()' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "downgrade:Downgrade an installed resource"
+      "get:Get resource manifest by its name, kind, catalog, and version"
+      "info:Display info of resource by its name, kind, catalog, and version"
+      "install:Install a resource from a catalog by its kind, name and version"
+      "reinstall:Reinstall a resource by its kind and name"
+      "search:Search resource by a combination of name, kind, and tags"
+      "upgrade:Upgrade an installed resource"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  downgrade)
+    _tkn_hub_downgrade
+    ;;
+  get)
+    _tkn_hub_get
+    ;;
+  info)
+    _tkn_hub_info
+    ;;
+  install)
+    _tkn_hub_install
+    ;;
+  reinstall)
+    _tkn_hub_reinstall
+    ;;
+  search)
+    _tkn_hub_search
+    ;;
+  upgrade)
+    _tkn_hub_upgrade
+    ;;
+  esac
+}
+
+
+function _tkn_hub_downgrade {
+  local -a commands
+
+  _arguments -C \
+    '(-c --context)'{-c,--context}'[Name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
+    '(-k --kubeconfig)'{-k,--kubeconfig}'[Kubectl config file (default: $HOME/.kube/config)]:()' \
+    '(-n --namespace)'{-n,--namespace}'[Namespace to use (default: from $KUBECONFIG)]:()' \
+    '--to[Version of Resource]:()' \
+    '--api-server[Hub API Server URL]:()' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "task:Downgrade an installed Task by its name to a lower version"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  task)
+    _tkn_hub_downgrade_task
+    ;;
+  esac
+}
+
+function _tkn_hub_downgrade_task {
+  _arguments \
+    '--api-server[Hub API Server URL]:()' \
+    '(-c --context)'{-c,--context}'[Name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
+    '(-k --kubeconfig)'{-k,--kubeconfig}'[Kubectl config file (default: $HOME/.kube/config)]:()' \
+    '(-n --namespace)'{-n,--namespace}'[Namespace to use (default: from $KUBECONFIG)]:()' \
+    '--to[Version of Resource]:()'
+}
+
+
+function _tkn_hub_get {
+  local -a commands
+
+  _arguments -C \
+    '--from[Name of Catalog to which resource belongs to.]:()' \
+    '--version[Version of Resource]:()' \
+    '--api-server[Hub API Server URL]:()' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "pipeline:Get Pipeline by name, catalog and version"
+      "task:Get Task by name, catalog and version"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  pipeline)
+    _tkn_hub_get_pipeline
+    ;;
+  task)
+    _tkn_hub_get_task
+    ;;
+  esac
+}
+
+function _tkn_hub_get_pipeline {
+  _arguments \
+    '--api-server[Hub API Server URL]:()' \
+    '--from[Name of Catalog to which resource belongs to.]:()' \
+    '--version[Version of Resource]:()'
+}
+
+function _tkn_hub_get_task {
+  _arguments \
+    '--as-clustertask[Get the Task as ClusterTask]' \
+    '--api-server[Hub API Server URL]:()' \
+    '--from[Name of Catalog to which resource belongs to.]:()' \
+    '--version[Version of Resource]:()'
+}
+
+
+function _tkn_hub_info {
+  local -a commands
+
+  _arguments -C \
+    '--from[Name of Catalog to which resource belongs.]:()' \
+    '--version[Version of Resource]:()' \
+    '--api-server[Hub API Server URL]:()' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "task:Display info of Task by its name, catalog and version"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  task)
+    _tkn_hub_info_task
+    ;;
+  esac
+}
+
+function _tkn_hub_info_task {
+  _arguments \
+    '--api-server[Hub API Server URL]:()' \
+    '--from[Name of Catalog to which resource belongs.]:()' \
+    '--version[Version of Resource]:()'
+}
+
+
+function _tkn_hub_install {
+  local -a commands
+
+  _arguments -C \
+    '(-c --context)'{-c,--context}'[Name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
+    '--from[Name of Catalog to which resource belongs.]:()' \
+    '(-k --kubeconfig)'{-k,--kubeconfig}'[Kubectl config file (default: $HOME/.kube/config)]:()' \
+    '(-n --namespace)'{-n,--namespace}'[Namespace to use (default: from $KUBECONFIG)]:()' \
+    '--version[Version of Resource]:()' \
+    '--api-server[Hub API Server URL]:()' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "task:Install Task from a catalog by its name and version"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  task)
+    _tkn_hub_install_task
+    ;;
+  esac
+}
+
+function _tkn_hub_install_task {
+  _arguments \
+    '--api-server[Hub API Server URL]:()' \
+    '(-c --context)'{-c,--context}'[Name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
+    '--from[Name of Catalog to which resource belongs.]:()' \
+    '(-k --kubeconfig)'{-k,--kubeconfig}'[Kubectl config file (default: $HOME/.kube/config)]:()' \
+    '(-n --namespace)'{-n,--namespace}'[Namespace to use (default: from $KUBECONFIG)]:()' \
+    '--version[Version of Resource]:()'
+}
+
+
+function _tkn_hub_reinstall {
+  local -a commands
+
+  _arguments -C \
+    '(-c --context)'{-c,--context}'[Name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
+    '--from[Name of Catalog to which resource belongs.]:()' \
+    '(-k --kubeconfig)'{-k,--kubeconfig}'[Kubectl config file (default: $HOME/.kube/config)]:()' \
+    '(-n --namespace)'{-n,--namespace}'[Namespace to use (default: from $KUBECONFIG)]:()' \
+    '--version[Version of Resource]:()' \
+    '--api-server[Hub API Server URL]:()' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "task:Reinstall a Task by its name"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  task)
+    _tkn_hub_reinstall_task
+    ;;
+  esac
+}
+
+function _tkn_hub_reinstall_task {
+  _arguments \
+    '--api-server[Hub API Server URL]:()' \
+    '(-c --context)'{-c,--context}'[Name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
+    '--from[Name of Catalog to which resource belongs.]:()' \
+    '(-k --kubeconfig)'{-k,--kubeconfig}'[Kubectl config file (default: $HOME/.kube/config)]:()' \
+    '(-n --namespace)'{-n,--namespace}'[Namespace to use (default: from $KUBECONFIG)]:()' \
+    '--version[Version of Resource]:()'
+}
+
+function _tkn_hub_search {
+  _arguments \
+    '*--kinds[Accepts a comma separated list of kinds]:()' \
+    '(-l --limit)'{-l,--limit}'[Max number of resources to fetch]:()' \
+    '--match[Accept type of search. '\''exact'\'' or '\''contains'\''.]:()' \
+    '(-o --output)'{-o,--output}'[Accepts output format: \[table, json\]]:()' \
+    '*--tags[Accepts a comma separated list of tags]:()' \
+    '--api-server[Hub API Server URL]:()'
+}
+
+
+function _tkn_hub_upgrade {
+  local -a commands
+
+  _arguments -C \
+    '(-c --context)'{-c,--context}'[Name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
+    '(-k --kubeconfig)'{-k,--kubeconfig}'[Kubectl config file (default: $HOME/.kube/config)]:()' \
+    '(-n --namespace)'{-n,--namespace}'[Namespace to use (default: from $KUBECONFIG)]:()' \
+    '--to[Version of Resource]:()' \
+    '--api-server[Hub API Server URL]:()' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "task:Upgrade a Task by its name"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  task)
+    _tkn_hub_upgrade_task
+    ;;
+  esac
+}
+
+function _tkn_hub_upgrade_task {
+  _arguments \
+    '--api-server[Hub API Server URL]:()' \
+    '(-c --context)'{-c,--context}'[Name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
+    '(-k --kubeconfig)'{-k,--kubeconfig}'[Kubectl config file (default: $HOME/.kube/config)]:()' \
+    '(-n --namespace)'{-n,--namespace}'[Namespace to use (default: from $KUBECONFIG)]:()' \
+    '--to[Version of Resource]:()'
 }
 
 
@@ -403,7 +727,7 @@ function _tkn_pipeline {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     "1: :->cmnds" \
     "*::arg:->args"
 
@@ -450,7 +774,7 @@ function _tkn_pipeline_delete {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_pipeline'
 }
 
@@ -462,7 +786,7 @@ function _tkn_pipeline_describe {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_pipeline'
 }
 
@@ -476,7 +800,7 @@ function _tkn_pipeline_list {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
 }
 
 function _tkn_pipeline_logs {
@@ -488,7 +812,7 @@ function _tkn_pipeline_logs {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_pipeline'
 }
 
@@ -500,6 +824,7 @@ function _tkn_pipeline_start {
     '(-L --last)'{-L,--last}'[re-run the Pipeline using last PipelineRun values]' \
     '--output[format of PipelineRun dry-run (yaml or json)]:()' \
     '(*-p *--param)'{\*-p,\*--param}'[pass the param as key=value for string type, or key=value1,value2,... for array type]:()' \
+    '--pod-template[local or remote file containing a PodTemplate definition]:()' \
     '--prefix-name[specify a prefix for the PipelineRun name (must be lowercase alphanumeric characters)]:()' \
     '(*-r *--resource)'{\*-r,\*--resource}'[pass the resource name and ref as name=ref]:()' \
     '(-s --serviceaccount)'{-s,--serviceaccount}'[pass the serviceaccount name]: :__kubectl_get_serviceaccount' \
@@ -512,7 +837,7 @@ function _tkn_pipeline_start {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_pipeline'
 }
 
@@ -524,7 +849,7 @@ function _tkn_pipelinerun {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     "1: :->cmnds" \
     "*::arg:->args"
 
@@ -565,7 +890,7 @@ function _tkn_pipelinerun_cancel {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_pipelinerun'
 }
 
@@ -581,7 +906,7 @@ function _tkn_pipelinerun_delete {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_pipelinerun'
 }
 
@@ -596,7 +921,7 @@ function _tkn_pipelinerun_describe {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_pipelinerun'
 }
 
@@ -613,7 +938,7 @@ function _tkn_pipelinerun_list {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
 }
 
 function _tkn_pipelinerun_logs {
@@ -627,7 +952,7 @@ function _tkn_pipelinerun_logs {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_pipelinerun'
 }
 
@@ -639,7 +964,7 @@ function _tkn_resource {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     "1: :->cmnds" \
     "*::arg:->args"
 
@@ -679,7 +1004,7 @@ function _tkn_resource_create {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
 }
 
 function _tkn_resource_delete {
@@ -692,7 +1017,7 @@ function _tkn_resource_delete {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_pipelineresource'
 }
 
@@ -704,7 +1029,7 @@ function _tkn_resource_describe {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_pipelineresource'
 }
 
@@ -719,7 +1044,7 @@ function _tkn_resource_list {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
 }
 
 
@@ -730,7 +1055,7 @@ function _tkn_task {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     "1: :->cmnds" \
     "*::arg:->args"
 
@@ -777,7 +1102,7 @@ function _tkn_task_delete {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_task'
 }
 
@@ -789,7 +1114,7 @@ function _tkn_task_describe {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_task'
 }
 
@@ -803,7 +1128,7 @@ function _tkn_task_list {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
 }
 
 function _tkn_task_logs {
@@ -815,7 +1140,7 @@ function _tkn_task_logs {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_task'
 }
 
@@ -829,6 +1154,7 @@ function _tkn_task_start {
     '--output[format of TaskRun dry-run (yaml or json)]:()' \
     '(*-o *--outputresource)'{\*-o,\*--outputresource}'[pass the output resource name and ref as name=ref]:()' \
     '(*-p *--param)'{\*-p,\*--param}'[pass the param as key=value for string type, or key=value1,value2,... for array type]:()' \
+    '--pod-template[local or remote file containing a PodTemplate definition]:()' \
     '--prefix-name[specify a prefix for the TaskRun name (must be lowercase alphanumeric characters)]:()' \
     '(-s --serviceaccount)'{-s,--serviceaccount}'[pass the serviceaccount name]: :__kubectl_get_serviceaccount' \
     '--showlog[show logs right after starting the Task]' \
@@ -839,7 +1165,7 @@ function _tkn_task_start {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_task'
 }
 
@@ -851,7 +1177,7 @@ function _tkn_taskrun {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     "1: :->cmnds" \
     "*::arg:->args"
 
@@ -892,7 +1218,7 @@ function _tkn_taskrun_cancel {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_taskrun'
 }
 
@@ -908,7 +1234,7 @@ function _tkn_taskrun_delete {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_taskrun'
 }
 
@@ -923,7 +1249,7 @@ function _tkn_taskrun_describe {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_taskrun'
 }
 
@@ -940,7 +1266,7 @@ function _tkn_taskrun_list {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
 }
 
 function _tkn_taskrun_logs {
@@ -954,7 +1280,7 @@ function _tkn_taskrun_logs {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_taskrun'
 }
 
@@ -966,16 +1292,16 @@ function _tkn_triggerbinding {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     "1: :->cmnds" \
     "*::arg:->args"
 
   case $state in
   cmnds)
     commands=(
-      "delete:Delete triggerbindings in a namespace"
-      "describe:Describes a triggerbinding in a namespace"
-      "list:Lists triggerbindings in a namespace"
+      "delete:Delete TriggerBindings in a namespace"
+      "describe:Describes a TriggerBinding in a namespace"
+      "list:Lists TriggerBindings in a namespace"
     )
     _describe "command" commands
     ;;
@@ -1004,7 +1330,7 @@ function _tkn_triggerbinding_delete {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_triggerbinding'
 }
 
@@ -1016,19 +1342,21 @@ function _tkn_triggerbinding_describe {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_triggerbindings'
 }
 
 function _tkn_triggerbinding_list {
   _arguments \
+    '(-A --all-namespaces)'{-A,--all-namespaces}'[list TriggerBindings from all namespaces]' \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
+    '--no-headers[do not print column headers with output (default print column headers with output)]' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
 }
 
 
@@ -1039,16 +1367,16 @@ function _tkn_triggertemplate {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     "1: :->cmnds" \
     "*::arg:->args"
 
   case $state in
   cmnds)
     commands=(
-      "delete:Delete triggertemplates in a namespace"
-      "describe:Describes a triggertemplate in a namespace"
-      "list:Lists triggertemplates in a namespace"
+      "delete:Delete TriggerTemplates in a namespace"
+      "describe:Describes a TriggerTemplate in a namespace"
+      "list:Lists TriggerTemplates in a namespace"
     )
     _describe "command" commands
     ;;
@@ -1077,7 +1405,7 @@ function _tkn_triggertemplate_delete {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_triggertemplate'
 }
 
@@ -1089,24 +1417,30 @@ function _tkn_triggertemplate_describe {
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]' \
     '1: :__tkn_get_triggertemplate'
 }
 
 function _tkn_triggertemplate_list {
   _arguments \
+    '(-A --all-namespaces)'{-A,--all-namespaces}'[list TriggerTemplates from all namespaces]' \
     '--allow-missing-template-keys[If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.]' \
+    '--no-headers[do not print column headers with output (default print column headers with output)]' \
     '(-o --output)'{-o,--output}'[Output format. One of: json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.]:()' \
     '--template[Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates \[http://golang.org/pkg/text/template/#pkg-overview\].]:filename:_files' \
     '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
     '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
     '(-n --namespace)'{-n,--namespace}'[namespace to use (default: from $KUBECONFIG)]: :__kubectl_get_namespace' \
-    '(-C --nocolour)'{-C,--nocolour}'[disable colouring (default: false)]'
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
 }
 
 function _tkn_version {
   _arguments \
-    '(-c --check)'{-c,--check}'[check if a newer version is available]'
+    '--check[check if a newer version is available]' \
+    '(-c --context)'{-c,--context}'[name of the kubeconfig context to use (default: kubectl config current-context)]:()' \
+    '(-k --kubeconfig)'{-k,--kubeconfig}'[kubectl config file (default: $HOME/.kube/config)]: :_filedir' \
+    '(-n --namespace)'{-n,--namespace}'[namespace to check installed controller version]:()' \
+    '(-C --no-color)'{-C,--no-color}'[disable coloring (default: false)]'
 }
 
 

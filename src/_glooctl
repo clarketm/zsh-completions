@@ -22,15 +22,19 @@ function _glooctl {
     commands=(
       "add:Adds configuration to a top-level Gloo resource"
       "check:Checks Gloo resources for errors (requires Gloo running on Kubernetes)"
+      "cluster:Cluster commands"
       "completion:generate auto completion for your shell"
       "create:Create a Gloo resource"
       "dashboard:Open Gloo dashboard"
       "debug:Debug a Gloo resource (requires Gloo running on Kubernetes)"
       "delete:Delete a Gloo resource"
+      "demo:Demos (requires 4 tools to be installed and accessible via the PATH: glooctl, kubectl, docker, and kind.)"
       "edit:Edit a Gloo resource"
       "get:Display one or a list of Gloo resources"
       "help:Help about any command"
       "install:install gloo on different platforms"
+      "istio:Commands for interacting with Istio in Gloo"
+      "plugin:Commands for interacting with glooctl plugins"
       "proxy:interact with proxy instances managed by Gloo"
       "remove:remove configuration items from a top-level Gloo resource"
       "route:subcommands for interacting with routes within virtual services"
@@ -49,6 +53,9 @@ function _glooctl {
   check)
     _glooctl_check
     ;;
+  cluster)
+    _glooctl_cluster
+    ;;
   completion)
     _glooctl_completion
     ;;
@@ -64,6 +71,9 @@ function _glooctl {
   delete)
     _glooctl_delete
     ;;
+  demo)
+    _glooctl_demo
+    ;;
   edit)
     _glooctl_edit
     ;;
@@ -75,6 +85,12 @@ function _glooctl {
     ;;
   install)
     _glooctl_install
+    ;;
+  istio)
+    _glooctl_istio
+    ;;
+  plugin)
+    _glooctl_plugin
     ;;
   proxy)
     _glooctl_proxy
@@ -177,7 +193,99 @@ For example, to extract the variable '\''id'\'' from the following request path 
 
 function _glooctl_check {
   _arguments \
+    '(*-x *--exclude)'{\*-x,\*--exclude}'[check to exclude: (pods, upstreamgroup, secrets, gateways, proxies)]:' \
     '(-n --namespace)'{-n,--namespace}'[namespace for reading or writing resources]:' \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]'
+}
+
+
+function _glooctl_cluster {
+  local -a commands
+
+  _arguments -C \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "deregister:Deregister a cluster to the Gloo Federation control plane"
+      "list:List clusters registered to the Gloo Federation control plane"
+      "register:Register a cluster to the Gloo Federation control plane"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  deregister)
+    _glooctl_cluster_deregister
+    ;;
+  list)
+    _glooctl_cluster_list
+    ;;
+  register)
+    _glooctl_cluster_register
+    ;;
+  esac
+}
+
+function _glooctl_cluster_deregister {
+  _arguments \
+    '--cluster-name[name of the cluster to deregister]:' \
+    '--federation-namespace[namespace of the Gloo Federation control plane]:' \
+    '--remote-context[name of the kubeconfig context to use for deregistration]:' \
+    '--remote-kubeconfig[path to the kubeconfig from which the deregistered cluster will be accessed]:' \
+    '--remote-namespace[namespace in the target cluster where artifacts should be deleted]:' \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]'
+}
+
+function _glooctl_cluster_list {
+  _arguments \
+    '--federation-namespace[namespace of the Gloo Federation control plane]:' \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]'
+}
+
+function _glooctl_cluster_register {
+  _arguments \
+    '--cluster-name[name of the cluster to register]:' \
+    '--federation-namespace[namespace of the Gloo Federation control plane]:' \
+    '--remote-context[name of the kubeconfig context to use for registration]:' \
+    '--remote-kubeconfig[path to the kubeconfig from which the registered cluster will be accessed]:' \
+    '--remote-namespace[namespace in the target cluster where registration artifacts should be written]:' \
     '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
     '--consul-address[address of the Consul server. Use with --use-consul]:' \
     '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
@@ -392,6 +500,7 @@ function _glooctl_create_secret_aws {
   _arguments \
     '--access-key[aws access key]:' \
     '--secret-key[aws secret key]:' \
+    '--session-token[aws session token]:' \
     '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
     '--consul-address[address of the Consul server. Use with --use-consul]:' \
     '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
@@ -943,6 +1052,53 @@ function _glooctl_delete_virtualservice {
     '--kubeconfig[kubeconfig to use, if not standard one]:' \
     '--name[name of the resource to read or write]:' \
     '(-n --namespace)'{-n,--namespace}'[namespace for reading or writing resources]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]'
+}
+
+
+function _glooctl_demo {
+  local -a commands
+
+  _arguments -C \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "federation:Bootstrap a multicluster demo with Gloo Federation."
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  federation)
+    _glooctl_demo_federation
+    ;;
+  esac
+}
+
+function _glooctl_demo_federation {
+  _arguments \
+    '--license-key[License key to activate Gloo Fed features]:' \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
     '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]'
 }
 
@@ -1552,15 +1708,7 @@ function _glooctl_install {
   local -a commands
 
   _arguments -C \
-    '--create-namespace[Create the namespace to install gloo into]' \
-    '(-d --dry-run)'{-d,--dry-run}'[Dump the raw installation yaml instead of applying it to kubernetes]' \
-    '(-f --file)'{-f,--file}'[Install Gloo from this Helm chart archive file rather than from a release]:' \
-    '(-n --namespace)'{-n,--namespace}'[namespace to install gloo into]:' \
-    '--release-name[helm release name]:' \
-    '*--values[List of files with value overrides for the Gloo Helm chart, (e.g. --values file1,file2 or --values file1 --values file2)]:' \
     '(-v --verbose)'{-v,--verbose}'[If true, output from kubectl commands will print to stdout/stderr]' \
-    '--version[version to install (e.g. 1.2.0, defaults to latest)]:' \
-    '--with-admin-console[install gloo and a read-only version of its admin console]' \
     '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
     '--consul-address[address of the Consul server. Use with --use-consul]:' \
     '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
@@ -1576,6 +1724,7 @@ function _glooctl_install {
   case $state in
   cmnds)
     commands=(
+      "federation:install Gloo Federation on Kubernetes"
       "gateway:install the Gloo Gateway on Kubernetes"
       "ingress:install the Gloo Ingress Controller on Kubernetes"
       "knative:install Knative with Gloo on Kubernetes"
@@ -1585,6 +1734,9 @@ function _glooctl_install {
   esac
 
   case "$words[1]" in
+  federation)
+    _glooctl_install_federation
+    ;;
   gateway)
     _glooctl_install_gateway
     ;;
@@ -1597,29 +1749,51 @@ function _glooctl_install {
   esac
 }
 
-
-function _glooctl_install_gateway {
-  local -a commands
-
-  _arguments -C \
+function _glooctl_install_federation {
+  _arguments \
+    '--create-namespace[Create the namespace to install gloo fed into]' \
+    '--dry-run[Dump the raw installation yaml instead of applying it to kubernetes]' \
+    '--file[Install Gloo Fed from this Helm chart archive file rather than from a release]:' \
+    '--license-key[License key to activate Gloo Fed features]:' \
+    '--namespace[namespace to install gloo fed into]:' \
+    '--release-name[helm release name]:' \
+    '*--values[List of files with value overrides for the Gloo Fed Helm chart, (e.g. --values file1,file2 or --values file1 --values file2)]:' \
+    '--version[version to install (e.g. 0.0.6, defaults to latest)]:' \
     '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
     '--consul-address[address of the Consul server. Use with --use-consul]:' \
     '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
     '--consul-root-key[key prefix for for Consul key-value storage.]:' \
     '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
     '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
+    '(-v --verbose)'{-v,--verbose}'[If true, output from kubectl commands will print to stdout/stderr]'
+}
+
+
+function _glooctl_install_gateway {
+  local -a commands
+
+  _arguments -C \
     '--create-namespace[Create the namespace to install gloo into]' \
     '(-d --dry-run)'{-d,--dry-run}'[Dump the raw installation yaml instead of applying it to kubernetes]' \
     '(-f --file)'{-f,--file}'[Install Gloo from this Helm chart archive file rather than from a release]:' \
-    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
-    '--kubeconfig[kubeconfig to use, if not standard one]:' \
     '(-n --namespace)'{-n,--namespace}'[namespace to install gloo into]:' \
     '--release-name[helm release name]:' \
-    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
     '*--values[List of files with value overrides for the Gloo Helm chart, (e.g. --values file1,file2 or --values file1 --values file2)]:' \
-    '(-v --verbose)'{-v,--verbose}'[If true, output from kubectl commands will print to stdout/stderr]' \
-    '--version[version to install (e.g. 1.2.0, defaults to latest)]:' \
+    '--version[version to install (e.g. 1.4.0, defaults to latest)]:' \
     '--with-admin-console[install gloo and a read-only version of its admin console]' \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
+    '(-v --verbose)'{-v,--verbose}'[If true, output from kubectl commands will print to stdout/stderr]' \
     "1: :->cmnds" \
     "*::arg:->args"
 
@@ -1641,75 +1815,212 @@ function _glooctl_install_gateway {
 
 function _glooctl_install_gateway_enterprise {
   _arguments \
+    '--create-namespace[Create the namespace to install gloo into]' \
+    '(-d --dry-run)'{-d,--dry-run}'[Dump the raw installation yaml instead of applying it to kubernetes]' \
+    '(-f --file)'{-f,--file}'[Install Gloo from this Helm chart archive file rather than from a release]:' \
     '--license-key[License key to activate GlooE features]:' \
+    '(-n --namespace)'{-n,--namespace}'[namespace to install gloo into]:' \
+    '--release-name[helm release name]:' \
+    '*--values[List of files with value overrides for the Gloo Helm chart, (e.g. --values file1,file2 or --values file1 --values file2)]:' \
+    '--version[version to install (e.g. 1.4.0, defaults to latest)]:' \
+    '--with-admin-console[install gloo and a read-only version of its admin console]' \
     '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
     '--consul-address[address of the Consul server. Use with --use-consul]:' \
     '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
     '--consul-root-key[key prefix for for Consul key-value storage.]:' \
     '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
     '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
-    '--create-namespace[Create the namespace to install gloo into]' \
-    '(-d --dry-run)'{-d,--dry-run}'[Dump the raw installation yaml instead of applying it to kubernetes]' \
-    '(-f --file)'{-f,--file}'[Install Gloo from this Helm chart archive file rather than from a release]:' \
     '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
     '--kubeconfig[kubeconfig to use, if not standard one]:' \
-    '(-n --namespace)'{-n,--namespace}'[namespace to install gloo into]:' \
-    '--release-name[helm release name]:' \
     '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
-    '*--values[List of files with value overrides for the Gloo Helm chart, (e.g. --values file1,file2 or --values file1 --values file2)]:' \
-    '(-v --verbose)'{-v,--verbose}'[If true, output from kubectl commands will print to stdout/stderr]' \
-    '--version[version to install (e.g. 1.2.0, defaults to latest)]:' \
-    '--with-admin-console[install gloo and a read-only version of its admin console]'
+    '(-v --verbose)'{-v,--verbose}'[If true, output from kubectl commands will print to stdout/stderr]'
 }
 
 function _glooctl_install_ingress {
   _arguments \
+    '--create-namespace[Create the namespace to install gloo into]' \
+    '(-d --dry-run)'{-d,--dry-run}'[Dump the raw installation yaml instead of applying it to kubernetes]' \
+    '(-f --file)'{-f,--file}'[Install Gloo from this Helm chart archive file rather than from a release]:' \
+    '(-n --namespace)'{-n,--namespace}'[namespace to install gloo into]:' \
+    '--release-name[helm release name]:' \
+    '*--values[List of files with value overrides for the Gloo Helm chart, (e.g. --values file1,file2 or --values file1 --values file2)]:' \
+    '--version[version to install (e.g. 1.4.0, defaults to latest)]:' \
+    '--with-admin-console[install gloo and a read-only version of its admin console]' \
     '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
     '--consul-address[address of the Consul server. Use with --use-consul]:' \
     '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
     '--consul-root-key[key prefix for for Consul key-value storage.]:' \
     '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
     '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
-    '--create-namespace[Create the namespace to install gloo into]' \
-    '(-d --dry-run)'{-d,--dry-run}'[Dump the raw installation yaml instead of applying it to kubernetes]' \
-    '(-f --file)'{-f,--file}'[Install Gloo from this Helm chart archive file rather than from a release]:' \
     '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
     '--kubeconfig[kubeconfig to use, if not standard one]:' \
-    '(-n --namespace)'{-n,--namespace}'[namespace to install gloo into]:' \
-    '--release-name[helm release name]:' \
     '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
-    '*--values[List of files with value overrides for the Gloo Helm chart, (e.g. --values file1,file2 or --values file1 --values file2)]:' \
-    '(-v --verbose)'{-v,--verbose}'[If true, output from kubectl commands will print to stdout/stderr]' \
-    '--version[version to install (e.g. 1.2.0, defaults to latest)]:' \
-    '--with-admin-console[install gloo and a read-only version of its admin console]'
+    '(-v --verbose)'{-v,--verbose}'[If true, output from kubectl commands will print to stdout/stderr]'
 }
 
 function _glooctl_install_knative {
   _arguments \
+    '--create-namespace[Create the namespace to install gloo into]' \
+    '(-d --dry-run)'{-d,--dry-run}'[Dump the raw installation yaml instead of applying it to kubernetes]' \
+    '(-f --file)'{-f,--file}'[Install Gloo from this Helm chart archive file rather than from a release]:' \
     '(-e --install-eventing)'{-e,--install-eventing}'[Bundle Knative-Eventing with your Gloo installation. Requires install-knative to be true]' \
     '--install-eventing-version[Version of Knative Eventing to install, when --install-eventing is set to `true`]:' \
     '(-k --install-knative)'{-k,--install-knative}'[Bundle Knative-Serving with your Gloo installation]' \
     '--install-knative-version[Version of Knative Serving to install, when --install-knative is set to `true`. This version will also be used to install Knative Monitoring, --install-monitoring is set]:' \
     '(-m --install-monitoring)'{-m,--install-monitoring}'[Bundle Knative-Monitoring with your Gloo installation. Requires install-knative to be true]' \
-    '(-g --skip-installing-gloo)'{-g,--skip-installing-gloo}'[Skip installing Gloo. Only Knative components will be installed]' \
+    '(-n --namespace)'{-n,--namespace}'[namespace to install gloo into]:' \
+    '--release-name[helm release name]:' \
+    '(-g --skip-installing-gloo)'{-g,--skip-installing-gloo}'[Skip installing Gloo Edge. Only Knative components will be installed]' \
+    '*--values[List of files with value overrides for the Gloo Helm chart, (e.g. --values file1,file2 or --values file1 --values file2)]:' \
+    '--version[version to install (e.g. 1.4.0, defaults to latest)]:' \
+    '--with-admin-console[install gloo and a read-only version of its admin console]' \
     '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
     '--consul-address[address of the Consul server. Use with --use-consul]:' \
     '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
     '--consul-root-key[key prefix for for Consul key-value storage.]:' \
     '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
     '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
-    '--create-namespace[Create the namespace to install gloo into]' \
-    '(-d --dry-run)'{-d,--dry-run}'[Dump the raw installation yaml instead of applying it to kubernetes]' \
-    '(-f --file)'{-f,--file}'[Install Gloo from this Helm chart archive file rather than from a release]:' \
     '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
     '--kubeconfig[kubeconfig to use, if not standard one]:' \
-    '(-n --namespace)'{-n,--namespace}'[namespace to install gloo into]:' \
-    '--release-name[helm release name]:' \
     '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
-    '*--values[List of files with value overrides for the Gloo Helm chart, (e.g. --values file1,file2 or --values file1 --values file2)]:' \
-    '(-v --verbose)'{-v,--verbose}'[If true, output from kubectl commands will print to stdout/stderr]' \
-    '--version[version to install (e.g. 1.2.0, defaults to latest)]:' \
-    '--with-admin-console[install gloo and a read-only version of its admin console]'
+    '(-v --verbose)'{-v,--verbose}'[If true, output from kubectl commands will print to stdout/stderr]'
+}
+
+
+function _glooctl_istio {
+  local -a commands
+
+  _arguments -C \
+    '--name[name of the resource to read or write]:' \
+    '(-n --namespace)'{-n,--namespace}'[namespace for reading or writing resources]:' \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "enable-mtls:Enables Istio mTLS for a given upstream"
+      "inject:Enable SDS & istio-proxy sidecars in gateway-proxy pod"
+      "uninject:Remove SDS & istio-proxy sidecars from gateway-proxy pod"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  enable-mtls)
+    _glooctl_istio_enable-mtls
+    ;;
+  inject)
+    _glooctl_istio_inject
+    ;;
+  uninject)
+    _glooctl_istio_uninject
+    ;;
+  esac
+}
+
+function _glooctl_istio_enable-mtls {
+  _arguments \
+    '(-u --upstream)'{-u,--upstream}'[upstream for which the istio sslConfig needs to change]:' \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--name[name of the resource to read or write]:' \
+    '(-n --namespace)'{-n,--namespace}'[namespace for reading or writing resources]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]'
+}
+
+function _glooctl_istio_inject {
+  _arguments \
+    '--istio-namespace[namespace in which istio is installed]:' \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--name[name of the resource to read or write]:' \
+    '(-n --namespace)'{-n,--namespace}'[namespace for reading or writing resources]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]'
+}
+
+function _glooctl_istio_uninject {
+  _arguments \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--name[name of the resource to read or write]:' \
+    '(-n --namespace)'{-n,--namespace}'[namespace for reading or writing resources]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]'
+}
+
+
+function _glooctl_plugin {
+  local -a commands
+
+  _arguments -C \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "list:List available glooctl plugins"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  list)
+    _glooctl_plugin_list
+    ;;
+  esac
+}
+
+function _glooctl_plugin_list {
+  _arguments \
+    '--federation-namespace[namespace of the Gloo Federation control plane]:' \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]'
 }
 
 
@@ -1973,8 +2284,11 @@ function _glooctl_route_sort {
     '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]'
 }
 
+
 function _glooctl_uninstall {
-  _arguments \
+  local -a commands
+
+  _arguments -C \
     '--all[Deletes all gloo resources, including the namespace, crds, and cluster role]' \
     '--delete-crds[Delete all gloo crds (all custom gloo objects will be deleted)]' \
     '--delete-namespace[Delete the namespace (all objects written to this namespace will be deleted)]' \
@@ -1989,7 +2303,43 @@ function _glooctl_uninstall {
     '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
     '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
     '--kubeconfig[kubeconfig to use, if not standard one]:' \
-    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]'
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
+    "1: :->cmnds" \
+    "*::arg:->args"
+
+  case $state in
+  cmnds)
+    commands=(
+      "federation:uninstall gloo federation"
+    )
+    _describe "command" commands
+    ;;
+  esac
+
+  case "$words[1]" in
+  federation)
+    _glooctl_uninstall_federation
+    ;;
+  esac
+}
+
+function _glooctl_uninstall_federation {
+  _arguments \
+    '--all[Deletes all gloo fed resources, including the namespace, crds, and cluster role]' \
+    '--delete-crds[Delete all gloo fed crds (all custom gloo fed objects will be deleted)]' \
+    '--delete-namespace[Delete the namespace (all objects written to this namespace will be deleted)]' \
+    '--namespace[namespace in which Gloo Fed is installed]:' \
+    '--release-name[helm release name]:' \
+    '(-c --config)'{-c,--config}'[set the path to the glooctl config file]:' \
+    '--consul-address[address of the Consul server. Use with --use-consul]:' \
+    '--consul-datacenter[Datacenter to use. If not provided, the default agent datacenter is used. Use with --use-consul]:' \
+    '--consul-root-key[key prefix for for Consul key-value storage.]:' \
+    '--consul-scheme[URI scheme for the Consul server. Use with --use-consul]:' \
+    '--consul-token[Token is used to provide a per-request ACL token which overrides the agent'\''s default token. Use with --use-consul]:' \
+    '(-i --interactive)'{-i,--interactive}'[use interactive mode]' \
+    '--kubeconfig[kubeconfig to use, if not standard one]:' \
+    '--use-consul[use Consul Key-Value storage as the backend for reading and writing config (VirtualServices, Upstreams, and Proxies)]' \
+    '(-v --verbose)'{-v,--verbose}'[If true, output from kubectl commands will print to stdout/stderr]'
 }
 
 function _glooctl_upgrade {
