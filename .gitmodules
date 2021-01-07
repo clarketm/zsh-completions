@@ -5,7 +5,7 @@
 [submodule "zchee_zsh-completions"]
 	path = zchee_zsh-completions
 	url = https://github.com/zchee/zsh-completions.git
-	branch = master
+	branch = main
 [submodule "nilsonholger_zsh-completions"]
 	path = nilsonholger_zsh-completions
 	url = https://github.com/nilsonholger/osx-zsh-completions.git
