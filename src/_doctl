@@ -7053,6 +7053,44 @@ _doctl_compute_volume-action_detach-by-droplet-id()
     noun_aliases=()
 }
 
+_doctl_compute_volume-action_get()
+{
+    last_command="doctl_compute_volume-action_get"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--action-id=")
+    local_nonpersistent_flags+=("--action-id=")
+    flags+=("--format=")
+    local_nonpersistent_flags+=("--format=")
+    flags+=("--no-header")
+    local_nonpersistent_flags+=("--no-header")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _doctl_compute_volume-action_resize()
 {
     last_command="doctl_compute_volume-action_resize"
@@ -7109,6 +7147,7 @@ _doctl_compute_volume-action()
         aliashash["d"]="detach"
     fi
     commands+=("detach-by-droplet-id")
+    commands+=("get")
     commands+=("resize")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("r")
