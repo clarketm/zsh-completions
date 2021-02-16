@@ -7091,6 +7091,42 @@ _doctl_compute_volume-action_get()
     noun_aliases=()
 }
 
+_doctl_compute_volume-action_list()
+{
+    last_command="doctl_compute_volume-action_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--format=")
+    local_nonpersistent_flags+=("--format=")
+    flags+=("--no-header")
+    local_nonpersistent_flags+=("--no-header")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _doctl_compute_volume-action_resize()
 {
     last_command="doctl_compute_volume-action_resize"
@@ -7148,6 +7184,11 @@ _doctl_compute_volume-action()
     fi
     commands+=("detach-by-droplet-id")
     commands+=("get")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
     commands+=("resize")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("r")
@@ -7578,6 +7619,192 @@ _doctl_databases_delete()
     flags+=("--force")
     flags+=("-f")
     local_nonpersistent_flags+=("--force")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_databases_firewalls_append()
+{
+    last_command="doctl_databases_firewalls_append"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--rule=")
+    local_nonpersistent_flags+=("--rule=")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_databases_firewalls_list()
+{
+    last_command="doctl_databases_firewalls_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_databases_firewalls_remove()
+{
+    last_command="doctl_databases_firewalls_remove"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--uuid=")
+    local_nonpersistent_flags+=("--uuid=")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_databases_firewalls_replace()
+{
+    last_command="doctl_databases_firewalls_replace"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--rule=")
+    local_nonpersistent_flags+=("--rule=")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_databases_firewalls()
+{
+    last_command="doctl_databases_firewalls"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("append")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("a")
+        aliashash["a"]="append"
+    fi
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+    commands+=("remove")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("rm")
+        aliashash["rm"]="remove"
+    fi
+    commands+=("replace")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("r")
+        aliashash["r"]="replace"
+    fi
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
     flags+=("--access-token=")
     two_word_flags+=("-t")
     flags+=("--api-url=")
@@ -8655,6 +8882,11 @@ _doctl_databases()
         command_aliases+=("rm")
         aliashash["rm"]="delete"
     fi
+    commands+=("firewalls")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("fw")
+        aliashash["fw"]="firewalls"
+    fi
     commands+=("get")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("g")
@@ -8960,6 +9192,44 @@ _doctl_invoice()
     noun_aliases=()
 }
 
+_doctl_kubernetes_1-click_install()
+{
+    last_command="doctl_kubernetes_1-click_install"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--1-clicks=")
+    local_nonpersistent_flags+=("--1-clicks=")
+    flags+=("--format=")
+    local_nonpersistent_flags+=("--format=")
+    flags+=("--no-header")
+    local_nonpersistent_flags+=("--no-header")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _doctl_kubernetes_1-click_list()
 {
     last_command="doctl_kubernetes_1-click_list"
@@ -9003,6 +9273,11 @@ _doctl_kubernetes_1-click()
     command_aliases=()
 
     commands=()
+    commands+=("install")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("in")
+        aliashash["in"]="install"
+    fi
     commands+=("list")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("ls")
@@ -9107,11 +9382,56 @@ _doctl_kubernetes_cluster_delete()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--dangerous")
+    local_nonpersistent_flags+=("--dangerous")
     flags+=("--force")
     flags+=("-f")
     local_nonpersistent_flags+=("--force")
     flags+=("--update-kubeconfig")
     local_nonpersistent_flags+=("--update-kubeconfig")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_kubernetes_cluster_delete-selective()
+{
+    last_command="doctl_kubernetes_cluster_delete-selective"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--force")
+    flags+=("-f")
+    local_nonpersistent_flags+=("--force")
+    flags+=("--load-balancers=")
+    local_nonpersistent_flags+=("--load-balancers=")
+    flags+=("--snapshots=")
+    local_nonpersistent_flags+=("--snapshots=")
+    flags+=("--update-kubeconfig")
+    local_nonpersistent_flags+=("--update-kubeconfig")
+    flags+=("--volumes=")
+    local_nonpersistent_flags+=("--volumes=")
     flags+=("--access-token=")
     two_word_flags+=("-t")
     flags+=("--api-url=")
@@ -9354,6 +9674,42 @@ _doctl_kubernetes_cluster_kubeconfig()
 _doctl_kubernetes_cluster_list()
 {
     last_command="doctl_kubernetes_cluster_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--format=")
+    local_nonpersistent_flags+=("--format=")
+    flags+=("--no-header")
+    local_nonpersistent_flags+=("--no-header")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_kubernetes_cluster_list-associated-resources()
+{
+    last_command="doctl_kubernetes_cluster_list-associated-resources"
 
     command_aliases=()
 
@@ -9932,6 +10288,11 @@ _doctl_kubernetes_cluster()
         command_aliases+=("rm")
         aliashash["rm"]="delete"
     fi
+    commands+=("delete-selective")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ds")
+        aliashash["ds"]="delete-selective"
+    fi
     commands+=("get")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("g")
@@ -9957,6 +10318,11 @@ _doctl_kubernetes_cluster()
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("ls")
         aliashash["ls"]="list"
+    fi
+    commands+=("list-associated-resources")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ar")
+        aliashash["ar"]="list-associated-resources"
     fi
     commands+=("node-pool")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
