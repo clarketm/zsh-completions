@@ -1106,7 +1106,7 @@ _brew_ls() {
 _brew_man() {
   _arguments \
     '--debug[Display any debugging information]' \
-    '--fail-if-changed[Return a failing status code if changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)]' \
+    '--fail-if-not-changed[Return a failing status code if no changes are detected in the manpage outputs. This can be used to notify CI when the manpages are out of date. Additionally, the date used in new manpages will match those in the existing manpages (to allow comparison without factoring in the date)]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
@@ -1229,10 +1229,11 @@ _brew_pr_publish() {
 # brew pr-pull
 _brew_pr_pull() {
   _arguments \
+    '(--bintray-org)--archive-item[Upload to the specified Internet Archive item (default: `homebrew`)]' \
     '--artifact[Download artifacts with the specified name (default: `bottles`)]' \
     '(--clean)--autosquash[Automatically reformat and reword commits in the pull request to our preferred format]' \
     '--bintray-mirror[Use the specified Bintray repository to automatically mirror stable URLs defined in the formulae (default: `mirror`)]' \
-    '--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
+    '(--archive-item)--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
     '--branch-okay[Do not warn if pulling to a branch besides the repository default (useful for testing)]' \
     '(--autosquash)--clean[Do not amend the commits from pull requests]' \
     '--debug[Display any debugging information]' \
@@ -1255,6 +1256,7 @@ _brew_pr_pull() {
 # brew pr-upload
 _brew_pr_upload() {
   _arguments \
+    '--archive-item[Upload to the specified Internet Archive item (default: `homebrew`)]' \
     '--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
     '--debug[Display any debugging information]' \
     '--dry-run[Print what would be done rather than doing it]' \
@@ -1488,10 +1490,10 @@ _brew_tap_info() {
 # brew tap-new
 _brew_tap_new() {
   _arguments \
-    '(--no-git)--branch[Initialize Git repository with the specified branch name (default: `main`)]' \
+    '--branch[Initialize Git repository and setup GitHub Actions workflows with the specified branch name (default: `main`)]' \
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
-    '(--branch)--no-git[Don'\''t initialize a Git repository for the tap]' \
+    '--no-git[Don'\''t initialize a Git repository for the tap]' \
     '--pull-label[Label name for pull requests ready to be pulled (default: `pr-pull`)]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
