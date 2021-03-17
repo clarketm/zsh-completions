@@ -337,15 +337,6 @@ _brew___repository() {
     '::tap:__brew_any_tap'
 }
 
-# brew --version
-_brew___version() {
-  _arguments \
-    '--debug[Display any debugging information]' \
-    '--help[Show this message]' \
-    '--quiet[Make some output more quiet]' \
-    '--verbose[Make some output more verbose]'
-}
-
 # brew -S
 _brew__s() {
   _arguments \
@@ -364,15 +355,6 @@ _brew__s() {
     '(--desc)--pull-request[Search for GitHub pull requests containing text]' \
     '--quiet[Make some output more quiet]' \
     '(--macports --fink --opensuse --fedora --debian)--ubuntu[Search for text in the given package manager'\''s list]' \
-    '--verbose[Make some output more verbose]'
-}
-
-# brew -v
-_brew__v() {
-  _arguments \
-    '--debug[Display any debugging information]' \
-    '--help[Show this message]' \
-    '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
 }
 
@@ -696,7 +678,8 @@ _brew_dispatch_build_bottle() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--issue[If specified, post a comment to this issue number if the job fails]' \
-    '--macos[Version of macOS the bottle should be built for]' \
+    '(--macos)--linux[Dispatch bottle for Linux (using GitHub runners)]' \
+    '(--linux)--macos[Version of macOS the bottle should be built for]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
     '--upload[Upload built bottles to Bintray]' \
