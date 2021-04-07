@@ -445,6 +445,7 @@ _brew_autoremove() {
 # brew bottle
 _brew_bottle() {
   _arguments \
+    '--committer[Specify a committer name and email in `git`'\''s standard author format]' \
     '--debug[Display any debugging information]' \
     '--force-core-tap[Build a bottle even if formula is not in `homebrew/core` or any installed taps]' \
     '--help[Show this message]' \
@@ -453,6 +454,7 @@ _brew_bottle() {
     '--merge[Generate an updated bottle block for a formula and optionally merge it into the formula file. Instead of a formula name, requires the path to a JSON file generated with `brew bottle --json` formula]' \
     '--no-commit[When passed with `--write`, a new commit will not generated after writing changes to the formula file]' \
     '(--keep-old)--no-rebuild[If the formula specifies a rebuild version, remove it from the generated DSL]' \
+    '--only-json-tab[When passed with `--json`, the tab will be written to the JSON file but not the bottle]' \
     '--quiet[Make some output more quiet]' \
     '--root-url[Use the specified URL as the root of the bottle'\''s URL instead of Homebrew'\''s default]' \
     '--skip-relocation[Do not check if the bottle can be marked as relocatable]' \
@@ -1060,19 +1062,19 @@ _brew_list() {
     '(--versions --unbrewed --pinned --l --r --t)--full-name[Print formulae with fully-qualified names. Unless `--full-name`, `--versions` or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) which produces the actual output]' \
     '--help[Show this message]' \
     '(--pinned --cask)--multiple[Only show formulae with multiple versions installed]' \
-    '(--multiple --unbrewed --1 --l --r --t --full-name --cask)--pinned[List only pinned formulae, or only the specified (pinned) formulae if formula are provided. See also `pin`, `unpin`]' \
+    '(--multiple --cask --unbrewed --1 --l --r --t --full-name)--pinned[List only pinned formulae, or only the specified (pinned) formulae if formula are provided. See also `pin`, `unpin`]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
     '(--full-name --unbrewed --1 --l --r --t)--versions[Show the version number for installed formulae, or only the specified formulae if formula are provided]' \
     '-1[Force output to be one entry per line. This is the default when output is not to a terminal]' \
-    '-l[List formulae in long format]' \
-    '-r[Reverse the order of the formulae sort to list the oldest entries first]' \
-    '-t[Sort formulae by time modified, listing most recently modified first]' \
+    '-l[List formulae and/or casks in long format. Has no effect when a formula or cask name is passed as an argument]' \
+    '-r[Reverse the order of the formulae and/or casks sort to list the oldest entries first. Has no effect when a formula or cask name is passed as an argument]' \
+    '-t[Sort formulae and/or casks by time modified, listing most recently modified first. Has no effect when a formula or cask name is passed as an argument]' \
     - installed_formula \
     '(--cask --unbrewed)--formula[List only formulae, or treat all named arguments as formulae]' \
     '*::installed_formula:__brew_installed_formulae' \
     - installed_cask \
-    '(--formula --multiple --unbrewed --pinned --l --r --t)--cask[List only casks, or treat all named arguments as casks]' \
+    '(--formula --pinned --multiple --unbrewed)--cask[List only casks, or treat all named arguments as casks]' \
     '*::installed_cask:__brew_installed_casks'
 }
 
@@ -1134,19 +1136,19 @@ _brew_ls() {
     '(--versions --unbrewed --pinned --l --r --t)--full-name[Print formulae with fully-qualified names. Unless `--full-name`, `--versions` or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are passed to `ls`(1) which produces the actual output]' \
     '--help[Show this message]' \
     '(--pinned --cask)--multiple[Only show formulae with multiple versions installed]' \
-    '(--multiple --unbrewed --1 --l --r --t --full-name --cask)--pinned[List only pinned formulae, or only the specified (pinned) formulae if formula are provided. See also `pin`, `unpin`]' \
+    '(--multiple --cask --unbrewed --1 --l --r --t --full-name)--pinned[List only pinned formulae, or only the specified (pinned) formulae if formula are provided. See also `pin`, `unpin`]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
     '(--full-name --unbrewed --1 --l --r --t)--versions[Show the version number for installed formulae, or only the specified formulae if formula are provided]' \
     '-1[Force output to be one entry per line. This is the default when output is not to a terminal]' \
-    '-l[List formulae in long format]' \
-    '-r[Reverse the order of the formulae sort to list the oldest entries first]' \
-    '-t[Sort formulae by time modified, listing most recently modified first]' \
+    '-l[List formulae and/or casks in long format. Has no effect when a formula or cask name is passed as an argument]' \
+    '-r[Reverse the order of the formulae and/or casks sort to list the oldest entries first. Has no effect when a formula or cask name is passed as an argument]' \
+    '-t[Sort formulae and/or casks by time modified, listing most recently modified first. Has no effect when a formula or cask name is passed as an argument]' \
     - installed_formula \
     '(--cask --unbrewed)--formula[List only formulae, or treat all named arguments as formulae]' \
     '*::installed_formula:__brew_installed_formulae' \
     - installed_cask \
-    '(--formula --multiple --unbrewed --pinned --l --r --t)--cask[List only casks, or treat all named arguments as casks]' \
+    '(--formula --pinned --multiple --unbrewed)--cask[List only casks, or treat all named arguments as casks]' \
     '*::installed_cask:__brew_installed_casks'
 }
 
@@ -1266,7 +1268,7 @@ _brew_pr_automerge() {
     '--verbose[Make some output more verbose]' \
     '--with-label[Pull requests must have this label]' \
     '--without-approval[Pull requests do not require approval to be merged]' \
-    '--without-labels[Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `linux-only`)]'
+    '--without-labels[Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `linux-only`, `linux to homebrew-core`)]'
 }
 
 # brew pr-publish
@@ -1292,14 +1294,16 @@ _brew_pr_pull() {
     '(--archive-item)--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
     '--branch-okay[Do not warn if pulling to a branch besides the repository default (useful for testing)]' \
     '(--autosquash)--clean[Do not amend the commits from pull requests]' \
+    '--committer[Specify a committer name and email in `git`'\''s standard author format]' \
     '--debug[Display any debugging information]' \
     '--dry-run[Print what would be done rather than doing it]' \
     '--help[Show this message]' \
     '--ignore-missing-artifacts[Comma-separated list of workflows which can be ignored if they have not been run]' \
     '--keep-old[If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL]' \
     '--message[Message to include when autosquashing revision bumps, deletions, and rebuilds]' \
-    '--no-publish[Download the bottles, apply the bottle commit and upload the bottles to Bintray, but don'\''t publish them]' \
-    '--no-upload[Download the bottles and apply the bottle commit, but don'\''t upload to Bintray or GitHub Releases]' \
+    '--no-commit[Do not generate a new commit before uploading]' \
+    '--no-publish[Download the bottles, apply the bottle commit and upload the bottles, but don'\''t publish them]' \
+    '--no-upload[Download the bottles and apply the bottle commit, but don'\''t upload]' \
     '--quiet[Make some output more quiet]' \
     '--resolve[When a patch fails to apply, leave in progress and allow user to resolve, instead of aborting]' \
     '--root-url[Use the specified URL as the root of the bottle'\''s URL instead of Homebrew'\''s default]' \
@@ -1314,6 +1318,7 @@ _brew_pr_upload() {
   _arguments \
     '--archive-item[Upload to the specified Internet Archive item (default: `homebrew`)]' \
     '--bintray-org[Upload to the specified Bintray organisation (default: `homebrew`)]' \
+    '--committer[Specify a committer name and email in `git`'\''s standard author format]' \
     '--debug[Display any debugging information]' \
     '--dry-run[Print what would be done rather than doing it]' \
     '--github-org[Upload to the specified GitHub organisation'\''s GitHub Packages (default: `homebrew`)]' \
