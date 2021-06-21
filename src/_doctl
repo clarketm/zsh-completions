@@ -918,6 +918,46 @@ _doctl_apps_logs()
     noun_aliases=()
 }
 
+_doctl_apps_propose()
+{
+    last_command="doctl_apps_propose"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--app=")
+    local_nonpersistent_flags+=("--app=")
+    flags+=("--format=")
+    local_nonpersistent_flags+=("--format=")
+    flags+=("--no-header")
+    local_nonpersistent_flags+=("--no-header")
+    flags+=("--spec=")
+    local_nonpersistent_flags+=("--spec=")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _doctl_apps_spec_get()
 {
     last_command="doctl_apps_spec_get"
@@ -968,6 +1008,8 @@ _doctl_apps_spec_validate()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--schema-only")
+    local_nonpersistent_flags+=("--schema-only")
     flags+=("--access-token=")
     two_word_flags+=("-t")
     flags+=("--api-url=")
@@ -1303,6 +1345,11 @@ _doctl_apps()
         command_aliases+=("l")
         aliashash["l"]="logs"
     fi
+    commands+=("propose")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("c")
+        aliashash["c"]="propose"
+    fi
     commands+=("spec")
     commands+=("tier")
     commands+=("update")
@@ -1401,6 +1448,38 @@ _doctl_auth_list()
     noun_aliases=()
 }
 
+_doctl_auth_remove()
+{
+    last_command="doctl_auth_remove"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _doctl_auth_switch()
 {
     last_command="doctl_auth_switch"
@@ -1446,6 +1525,7 @@ _doctl_auth()
         command_aliases+=("ls")
         aliashash["ls"]="list"
     fi
+    commands+=("remove")
     commands+=("switch")
 
     flags=()

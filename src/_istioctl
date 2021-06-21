@@ -478,6 +478,90 @@ __istioctl_handle_word()
     __istioctl_handle_word
 }
 
+_istioctl_admin_log()
+{
+    last_command="istioctl_admin_log"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--ctrlz_port=")
+    two_word_flags+=("--ctrlz_port")
+    flags+=("--level=")
+    two_word_flags+=("--level")
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    flags+=("--reset")
+    flags+=("-r")
+    flags+=("--stack-trace-level=")
+    two_word_flags+=("--stack-trace-level")
+    flags+=("--context=")
+    two_word_flags+=("--context")
+    flags+=("--istioNamespace=")
+    two_word_flags+=("--istioNamespace")
+    two_word_flags+=("-i")
+    flags+=("--kubeconfig=")
+    two_word_flags+=("--kubeconfig")
+    two_word_flags+=("-c")
+    flags+=("--namespace=")
+    two_word_flags+=("--namespace")
+    two_word_flags+=("-n")
+    flags+=("--selector=")
+    two_word_flags+=("--selector")
+    two_word_flags+=("-l")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_istioctl_admin()
+{
+    last_command="istioctl_admin"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("log")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("l")
+        aliashash["l"]="log"
+    fi
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--selector=")
+    two_word_flags+=("--selector")
+    two_word_flags+=("-l")
+    flags+=("--context=")
+    two_word_flags+=("--context")
+    flags+=("--istioNamespace=")
+    two_word_flags+=("--istioNamespace")
+    two_word_flags+=("-i")
+    flags+=("--kubeconfig=")
+    two_word_flags+=("--kubeconfig")
+    two_word_flags+=("-c")
+    flags+=("--namespace=")
+    two_word_flags+=("--namespace")
+    two_word_flags+=("-n")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _istioctl_analyze()
 {
     last_command="istioctl_analyze"
@@ -1015,6 +1099,7 @@ _istioctl_experimental_add-to-mesh_deployment()
 
     flags+=("--revision=")
     two_word_flags+=("--revision")
+    two_word_flags+=("-r")
     flags+=("--context=")
     two_word_flags+=("--context")
     flags+=("--injectConfigFile=")
@@ -1108,6 +1193,7 @@ _istioctl_experimental_add-to-mesh_service()
 
     flags+=("--revision=")
     two_word_flags+=("--revision")
+    two_word_flags+=("-r")
     flags+=("--context=")
     two_word_flags+=("--context")
     flags+=("--injectConfigFile=")
@@ -1348,6 +1434,8 @@ _istioctl_experimental_create-remote-secret()
     two_word_flags+=("-d")
     flags+=("--name=")
     two_word_flags+=("--name")
+    flags+=("--secret-name=")
+    two_word_flags+=("--secret-name")
     flags+=("--server=")
     two_word_flags+=("--server")
     flags+=("--service-account=")
@@ -1535,9 +1623,9 @@ _istioctl_experimental_injector()
     noun_aliases=()
 }
 
-_istioctl_experimental_istiod_log()
+_istioctl_experimental_internal-debug()
 {
-    last_command="istioctl_experimental_istiod_log"
+    last_command="istioctl_experimental_internal-debug"
 
     command_aliases=()
 
@@ -1549,59 +1637,23 @@ _istioctl_experimental_istiod_log()
     flags_with_completion=()
     flags_completion=()
 
-    flags+=("--ctrlz_port=")
-    two_word_flags+=("--ctrlz_port")
-    flags+=("--level=")
-    two_word_flags+=("--level")
-    flags+=("--output=")
-    two_word_flags+=("--output")
-    two_word_flags+=("-o")
-    flags+=("--reset")
-    flags+=("-r")
-    flags+=("--stack-trace-level=")
-    two_word_flags+=("--stack-trace-level")
-    flags+=("--context=")
-    two_word_flags+=("--context")
-    flags+=("--istioNamespace=")
-    two_word_flags+=("--istioNamespace")
-    two_word_flags+=("-i")
-    flags+=("--kubeconfig=")
-    two_word_flags+=("--kubeconfig")
-    two_word_flags+=("-c")
-    flags+=("--namespace=")
-    two_word_flags+=("--namespace")
-    two_word_flags+=("-n")
-    flags+=("--selector=")
-    two_word_flags+=("--selector")
-    two_word_flags+=("-l")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
-_istioctl_experimental_istiod()
-{
-    last_command="istioctl_experimental_istiod"
-
-    command_aliases=()
-
-    commands=()
-    commands+=("log")
-    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("l")
-        aliashash["l"]="log"
-    fi
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--selector=")
-    two_word_flags+=("--selector")
-    two_word_flags+=("-l")
+    flags+=("--authority=")
+    two_word_flags+=("--authority")
+    flags+=("--cert-dir=")
+    two_word_flags+=("--cert-dir")
+    flags+=("--insecure")
+    flags+=("--plaintext")
+    flags+=("--revision=")
+    two_word_flags+=("--revision")
+    two_word_flags+=("-r")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+    flags+=("--xds-address=")
+    two_word_flags+=("--xds-address")
+    flags+=("--xds-label=")
+    two_word_flags+=("--xds-label")
+    flags+=("--xds-port=")
+    two_word_flags+=("--xds-port")
     flags+=("--context=")
     two_word_flags+=("--context")
     flags+=("--istioNamespace=")
@@ -1701,17 +1753,10 @@ _istioctl_experimental_precheck()
     flags_with_completion=()
     flags_completion=()
 
-    flags+=("--filename=")
-    two_word_flags+=("--filename")
-    flags_with_completion+=("--filename")
-    flags_completion+=("__istioctl_handle_filename_extension_flag json|yaml|yml")
-    two_word_flags+=("-f")
-    flags_with_completion+=("-f")
-    flags_completion+=("__istioctl_handle_filename_extension_flag json|yaml|yml")
-    flags+=("--recursive")
-    flags+=("-R")
     flags+=("--revision=")
     two_word_flags+=("--revision")
+    two_word_flags+=("-r")
+    flags+=("--skip-controlplane")
     flags+=("--context=")
     two_word_flags+=("--context")
     flags+=("--istioNamespace=")
@@ -1751,6 +1796,7 @@ _istioctl_experimental_proxy-status()
     flags+=("--plaintext")
     flags+=("--revision=")
     two_word_flags+=("--revision")
+    two_word_flags+=("-r")
     flags+=("--timeout=")
     two_word_flags+=("--timeout")
     flags+=("--xds-address=")
@@ -1917,6 +1963,355 @@ _istioctl_experimental_remove-from-mesh()
     noun_aliases=()
 }
 
+_istioctl_experimental_revision_describe()
+{
+    last_command="istioctl_experimental_revision_describe"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--context=")
+    two_word_flags+=("--context")
+    flags+=("--istioNamespace=")
+    two_word_flags+=("--istioNamespace")
+    two_word_flags+=("-i")
+    flags+=("--kubeconfig=")
+    two_word_flags+=("--kubeconfig")
+    two_word_flags+=("-c")
+    flags+=("--manifests=")
+    two_word_flags+=("--manifests")
+    two_word_flags+=("-d")
+    flags+=("--namespace=")
+    two_word_flags+=("--namespace")
+    two_word_flags+=("-n")
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_istioctl_experimental_revision_list()
+{
+    last_command="istioctl_experimental_revision_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--context=")
+    two_word_flags+=("--context")
+    flags+=("--istioNamespace=")
+    two_word_flags+=("--istioNamespace")
+    two_word_flags+=("-i")
+    flags+=("--kubeconfig=")
+    two_word_flags+=("--kubeconfig")
+    two_word_flags+=("-c")
+    flags+=("--manifests=")
+    two_word_flags+=("--manifests")
+    two_word_flags+=("-d")
+    flags+=("--namespace=")
+    two_word_flags+=("--namespace")
+    two_word_flags+=("-n")
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_istioctl_experimental_revision_tag_generate()
+{
+    last_command="istioctl_experimental_revision_tag_generate"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--overwrite")
+    flags+=("--revision=")
+    two_word_flags+=("--revision")
+    two_word_flags+=("-r")
+    flags+=("--skip-confirmation")
+    flags+=("-y")
+    flags+=("--webhook-name=")
+    two_word_flags+=("--webhook-name")
+    flags+=("--context=")
+    two_word_flags+=("--context")
+    flags+=("--istioNamespace=")
+    two_word_flags+=("--istioNamespace")
+    two_word_flags+=("-i")
+    flags+=("--kubeconfig=")
+    two_word_flags+=("--kubeconfig")
+    two_word_flags+=("-c")
+    flags+=("--manifests=")
+    two_word_flags+=("--manifests")
+    two_word_flags+=("-d")
+    flags+=("--namespace=")
+    two_word_flags+=("--namespace")
+    two_word_flags+=("-n")
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_flag+=("--revision=")
+    must_have_one_flag+=("-r")
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_istioctl_experimental_revision_tag_list()
+{
+    last_command="istioctl_experimental_revision_tag_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--context=")
+    two_word_flags+=("--context")
+    flags+=("--istioNamespace=")
+    two_word_flags+=("--istioNamespace")
+    two_word_flags+=("-i")
+    flags+=("--kubeconfig=")
+    two_word_flags+=("--kubeconfig")
+    two_word_flags+=("-c")
+    flags+=("--manifests=")
+    two_word_flags+=("--manifests")
+    two_word_flags+=("-d")
+    flags+=("--namespace=")
+    two_word_flags+=("--namespace")
+    two_word_flags+=("-n")
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_istioctl_experimental_revision_tag_remove()
+{
+    last_command="istioctl_experimental_revision_tag_remove"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--skip-confirmation")
+    flags+=("-y")
+    flags+=("--context=")
+    two_word_flags+=("--context")
+    flags+=("--istioNamespace=")
+    two_word_flags+=("--istioNamespace")
+    two_word_flags+=("-i")
+    flags+=("--kubeconfig=")
+    two_word_flags+=("--kubeconfig")
+    two_word_flags+=("-c")
+    flags+=("--manifests=")
+    two_word_flags+=("--manifests")
+    two_word_flags+=("-d")
+    flags+=("--namespace=")
+    two_word_flags+=("--namespace")
+    two_word_flags+=("-n")
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_istioctl_experimental_revision_tag_set()
+{
+    last_command="istioctl_experimental_revision_tag_set"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--overwrite")
+    flags+=("--revision=")
+    two_word_flags+=("--revision")
+    two_word_flags+=("-r")
+    flags+=("--skip-confirmation")
+    flags+=("-y")
+    flags+=("--webhook-name=")
+    two_word_flags+=("--webhook-name")
+    flags+=("--context=")
+    two_word_flags+=("--context")
+    flags+=("--istioNamespace=")
+    two_word_flags+=("--istioNamespace")
+    two_word_flags+=("-i")
+    flags+=("--kubeconfig=")
+    two_word_flags+=("--kubeconfig")
+    two_word_flags+=("-c")
+    flags+=("--manifests=")
+    two_word_flags+=("--manifests")
+    two_word_flags+=("-d")
+    flags+=("--namespace=")
+    two_word_flags+=("--namespace")
+    two_word_flags+=("-n")
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_flag+=("--revision=")
+    must_have_one_flag+=("-r")
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_istioctl_experimental_revision_tag()
+{
+    last_command="istioctl_experimental_revision_tag"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("generate")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("show")
+        aliashash["show"]="list"
+    fi
+    commands+=("remove")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("delete")
+        aliashash["delete"]="remove"
+    fi
+    commands+=("set")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--context=")
+    two_word_flags+=("--context")
+    flags+=("--istioNamespace=")
+    two_word_flags+=("--istioNamespace")
+    two_word_flags+=("-i")
+    flags+=("--kubeconfig=")
+    two_word_flags+=("--kubeconfig")
+    two_word_flags+=("-c")
+    flags+=("--manifests=")
+    two_word_flags+=("--manifests")
+    two_word_flags+=("-d")
+    flags+=("--namespace=")
+    two_word_flags+=("--namespace")
+    two_word_flags+=("-n")
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_istioctl_experimental_revision()
+{
+    last_command="istioctl_experimental_revision"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("describe")
+    commands+=("list")
+    commands+=("tag")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--manifests=")
+    two_word_flags+=("--manifests")
+    two_word_flags+=("-d")
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+    flags+=("--verbose")
+    flags+=("-v")
+    flags+=("--context=")
+    two_word_flags+=("--context")
+    flags+=("--istioNamespace=")
+    two_word_flags+=("--istioNamespace")
+    two_word_flags+=("-i")
+    flags+=("--kubeconfig=")
+    two_word_flags+=("--kubeconfig")
+    two_word_flags+=("-c")
+    flags+=("--namespace=")
+    two_word_flags+=("--namespace")
+    two_word_flags+=("-n")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _istioctl_experimental_uninstall()
 {
     last_command="istioctl_experimental_uninstall"
@@ -1996,6 +2391,7 @@ _istioctl_experimental_version()
     local_nonpersistent_flags+=("--remote")
     flags+=("--revision=")
     two_word_flags+=("--revision")
+    two_word_flags+=("-r")
     flags+=("--short")
     flags+=("-s")
     local_nonpersistent_flags+=("--short")
@@ -2045,6 +2441,7 @@ _istioctl_experimental_wait()
     two_word_flags+=("--generation")
     flags+=("--revision=")
     two_word_flags+=("--revision")
+    two_word_flags+=("-r")
     flags+=("--threshold=")
     two_word_flags+=("--threshold")
     flags+=("--timeout=")
@@ -2098,6 +2495,7 @@ _istioctl_experimental_workload_entry_configure()
     two_word_flags+=("-o")
     flags+=("--revision=")
     two_word_flags+=("--revision")
+    two_word_flags+=("-r")
     flags+=("--tokenDuration=")
     two_word_flags+=("--tokenDuration")
     flags+=("--context=")
@@ -2280,7 +2678,7 @@ _istioctl_experimental()
         aliashash["des"]="describe"
     fi
     commands+=("injector")
-    commands+=("istiod")
+    commands+=("internal-debug")
     commands+=("kube-uninject")
     commands+=("metrics")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
@@ -2297,6 +2695,11 @@ _istioctl_experimental()
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("rm")
         aliashash["rm"]="remove-from-mesh"
+    fi
+    commands+=("revision")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("rev")
+        aliashash["rev"]="revision"
     fi
     commands+=("uninstall")
     commands+=("version")
@@ -2429,8 +2832,6 @@ _istioctl_kube-inject()
     two_word_flags+=("-f")
     flags+=("--injectConfigFile=")
     two_word_flags+=("--injectConfigFile")
-    flags+=("--injectConfigMapName=")
-    two_word_flags+=("--injectConfigMapName")
     flags+=("--meshConfigFile=")
     two_word_flags+=("--meshConfigFile")
     flags+=("--meshConfigMapName=")
@@ -2440,8 +2841,11 @@ _istioctl_kube-inject()
     two_word_flags+=("-o")
     flags+=("--revision=")
     two_word_flags+=("--revision")
+    two_word_flags+=("-r")
     flags+=("--valuesFile=")
     two_word_flags+=("--valuesFile")
+    flags+=("--webhookConfig=")
+    two_word_flags+=("--webhookConfig")
     flags+=("--context=")
     two_word_flags+=("--context")
     flags+=("--istioNamespace=")
@@ -2972,6 +3376,58 @@ _istioctl_profile()
     noun_aliases=()
 }
 
+_istioctl_proxy-config_all()
+{
+    last_command="istioctl_proxy-config_all"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--address=")
+    two_word_flags+=("--address")
+    flags+=("--direction=")
+    two_word_flags+=("--direction")
+    flags+=("--file=")
+    two_word_flags+=("--file")
+    two_word_flags+=("-f")
+    flags+=("--fqdn=")
+    two_word_flags+=("--fqdn")
+    flags+=("--name=")
+    two_word_flags+=("--name")
+    flags+=("--port=")
+    two_word_flags+=("--port")
+    flags+=("--subset=")
+    two_word_flags+=("--subset")
+    flags+=("--type=")
+    two_word_flags+=("--type")
+    flags+=("--verbose")
+    flags+=("--context=")
+    two_word_flags+=("--context")
+    flags+=("--istioNamespace=")
+    two_word_flags+=("--istioNamespace")
+    two_word_flags+=("-i")
+    flags+=("--kubeconfig=")
+    two_word_flags+=("--kubeconfig")
+    two_word_flags+=("-c")
+    flags+=("--namespace=")
+    two_word_flags+=("--namespace")
+    two_word_flags+=("-n")
+    flags+=("--output=")
+    two_word_flags+=("--output")
+    two_word_flags+=("-o")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _istioctl_proxy-config_bootstrap()
 {
     last_command="istioctl_proxy-config_bootstrap"
@@ -3268,6 +3724,11 @@ _istioctl_proxy-config()
     command_aliases=()
 
     commands=()
+    commands+=("all")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("a")
+        aliashash["a"]="all"
+    fi
     commands+=("bootstrap")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("b")
@@ -3359,6 +3820,7 @@ _istioctl_proxy-status()
     two_word_flags+=("-f")
     flags+=("--revision=")
     two_word_flags+=("--revision")
+    two_word_flags+=("-r")
     flags+=("--context=")
     two_word_flags+=("--context")
     flags+=("--istioNamespace=")
@@ -3483,6 +3945,7 @@ _istioctl_verify-install()
     two_word_flags+=("-d")
     flags+=("--revision=")
     two_word_flags+=("--revision")
+    two_word_flags+=("-r")
     flags+=("--context=")
     two_word_flags+=("--context")
     flags+=("--istioNamespace=")
@@ -3524,6 +3987,7 @@ _istioctl_version()
     local_nonpersistent_flags+=("--remote")
     flags+=("--revision=")
     two_word_flags+=("--revision")
+    two_word_flags+=("-r")
     flags+=("--short")
     flags+=("-s")
     local_nonpersistent_flags+=("--short")
@@ -3552,6 +4016,11 @@ _istioctl_root_command()
     command_aliases=()
 
     commands=()
+    commands+=("admin")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("istiod")
+        aliashash["istiod"]="admin"
+    fi
     commands+=("analyze")
     commands+=("authz")
     commands+=("bug-report")
