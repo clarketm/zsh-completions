@@ -177,7 +177,6 @@ __brew_internal_commands() {
     'log:Show the `git log` for formula, or show the log for the Homebrew repository if no formula is provided'
     'man:Generate Homebrew'\''s manpages'
     'migrate:Migrate renamed packages to new names, where formula are old names of packages'
-    'mirror:Reupload the stable URL of a formula for use as a mirror'
     'missing:Check the given formula kegs for missing dependencies'
     'options:Show install options specific to formula'
     'outdated:List installed casks and formulae that have an updated version available'
@@ -191,7 +190,6 @@ __brew_internal_commands() {
     'readall:Import all items from the specified tap, or from all installed taps if none is provided'
     'reinstall:Uninstall and then reinstall a formula or cask using the same options it was originally installed with, plus any appended options specific to a formula'
     'release:Create a new draft Homebrew/brew release with the appropriate version number and release notes'
-    'release-notes:Print the merged pull requests on Homebrew/brew between two Git refs'
     'rubocop:Installs, configures and runs Homebrew'\''s `rubocop`'
     'ruby:Run a Ruby instance with Homebrew'\''s libraries loaded'
     'search:Perform a substring search of cask tokens and formula names for text'
@@ -717,8 +715,10 @@ _brew_dispatch_build_bottle() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--issue[If specified, post a comment to this issue number if the job fails]' \
-    '(--macos)--linux[Dispatch bottle for Linux (using GitHub runners)]' \
-    '(--linux)--macos[Version of macOS the bottle should be built for]' \
+    '(--macos --linux-self-hosted)--linux[Dispatch bottle for Linux (using GitHub runners)]' \
+    '(--macos --linux)--linux-self-hosted[Dispatch bottle for Linux (using self-hosted runner)]' \
+    '--linux-wheezy[Use Debian Wheezy container for building the bottle on Linux]' \
+    '(--linux --linux-self-hosted)--macos[Version of macOS the bottle should be built for]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
     '--upload[Upload built bottles]' \
@@ -911,7 +911,7 @@ _brew_info() {
 # brew instal
 _brew_instal() {
   _arguments \
-    '(--cask)--HEAD[If formula defines it, install the HEAD version, aka. master, trunk, unstable]' \
+    '(--cask)--HEAD[If formula defines it, install the HEAD version, aka. main, trunk, unstable, master]' \
     '(--formula)--appdir[Target location for Applications (default: `/Applications`)]' \
     '(--formula)--audio-unit-plugindir[Target location for Audio Unit Plugins (default: `~/Library/Audio/Plug-Ins/Components`)]' \
     '(--formula)--binaries[Disable/enable linking of helper executables (default: enabled)]' \
@@ -963,7 +963,7 @@ _brew_instal() {
 # brew install
 _brew_install() {
   _arguments \
-    '(--cask)--HEAD[If formula defines it, install the HEAD version, aka. master, trunk, unstable]' \
+    '(--cask)--HEAD[If formula defines it, install the HEAD version, aka. main, trunk, unstable, master]' \
     '(--formula)--appdir[Target location for Applications (default: `/Applications`)]' \
     '(--formula)--audio-unit-plugindir[Target location for Audio Unit Plugins (default: `~/Library/Audio/Plug-Ins/Components`)]' \
     '(--formula)--binaries[Disable/enable linking of helper executables (default: enabled)]' \
@@ -1016,6 +1016,7 @@ _brew_install() {
 _brew_install_bundler_gems() {
   _arguments \
     '--debug[Display any debugging information]' \
+    '--groups[Installs the specified comma-separated list of gem groups (default: last used)]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
@@ -1190,15 +1191,6 @@ _brew_migrate() {
     '--verbose[Make some output more verbose]' \
     - installed_formula \
     '*::installed_formula:__brew_installed_formulae'
-}
-
-# brew mirror
-_brew_mirror() {
-  _arguments \
-    '--debug[Display any debugging information]' \
-    '--help[Show this message]' \
-    '--quiet[Make some output more quiet]' \
-    '--verbose[Make some output more verbose]'
 }
 
 # brew missing
@@ -1382,6 +1374,7 @@ _brew_reinstall() {
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
     '--force[Install without checking for previously installed keg-only or non-migrated versions]' \
     '(--cask --build-from-source)--force-bottle[Install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation]' \
+    '(--cask)--git[Create a Git repository, useful for creating patches to the software]' \
     '--help[Show this message]' \
     '(--formula)--input-methoddir[Target location for Input Methods (default: `~/Library/Input Methods`)]' \
     '(--cask)--interactive[Download and patch formula, then open a shell. This allows the user to run `./configure --help` and otherwise determine how to turn the software package into a Homebrew package]' \
@@ -1406,7 +1399,7 @@ _brew_reinstall() {
     '(--casks --binaries --require-sha --quarantine --skip-cask-deps --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
-    '(--formulae --build-from-source --interactive --force-bottle --keep-tmp --display-times)--cask[Treat all named arguments as casks]' \
+    '(--formulae --build-from-source --interactive --force-bottle --keep-tmp --display-times --git)--cask[Treat all named arguments as casks]' \
     '*::cask:__brew_casks'
 }
 
@@ -1417,16 +1410,6 @@ _brew_release() {
     '--help[Show this message]' \
     '(--minor)--major[Create a major release]' \
     '(--major)--minor[Create a minor release]' \
-    '--quiet[Make some output more quiet]' \
-    '--verbose[Make some output more verbose]'
-}
-
-# brew release-notes
-_brew_release_notes() {
-  _arguments \
-    '--debug[Display any debugging information]' \
-    '--help[Show this message]' \
-    '--markdown[Print as a Markdown list]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
 }
