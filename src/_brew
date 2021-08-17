@@ -155,6 +155,7 @@ __brew_internal_commands() {
     'create:Generate a formula or, with `--cask`, a cask for the downloadable file at URL and open it in the editor'
     'deps:Show dependencies for formula'
     'desc:Display formula'\''s name and one-line description'
+    'developer:Control Homebrew'\''s developer mode'
     'dispatch-build-bottle:Build bottles for these formulae with GitHub Actions'
     'doctor:Check your system for potential problems'
     'edit:Open a formula or cask in the editor set by `EDITOR` or `HOMEBREW_EDITOR`, or open the Homebrew repository for editing if no formula is provided'
@@ -349,19 +350,20 @@ _brew__s() {
   _arguments \
     '--cask[Search online and locally for casks]' \
     '(--open)--closed[Search for only closed GitHub pull requests]' \
-    '(--macports --fink --opensuse --fedora --ubuntu)--debian[Search for text in the given package manager'\''s list]' \
+    '(--repology --macports --fink --opensuse --fedora --ubuntu)--debian[Search for text in the given database]' \
     '--debug[Display any debugging information]' \
     '(--pull-request)--desc[Search for formulae with a description matching text and casks with a name matching text]' \
-    '(--macports --fink --opensuse --debian --ubuntu)--fedora[Search for text in the given package manager'\''s list]' \
-    '(--macports --opensuse --fedora --debian --ubuntu)--fink[Search for text in the given package manager'\''s list]' \
+    '(--repology --macports --fink --opensuse --debian --ubuntu)--fedora[Search for text in the given database]' \
+    '(--repology --macports --opensuse --fedora --debian --ubuntu)--fink[Search for text in the given database]' \
     '--formula[Search online and locally for formulae]' \
     '--help[Show this message]' \
-    '(--fink --opensuse --fedora --debian --ubuntu)--macports[Search for text in the given package manager'\''s list]' \
+    '(--repology --fink --opensuse --fedora --debian --ubuntu)--macports[Search for text in the given database]' \
     '(--closed)--open[Search for only open GitHub pull requests]' \
-    '(--macports --fink --fedora --debian --ubuntu)--opensuse[Search for text in the given package manager'\''s list]' \
+    '(--repology --macports --fink --fedora --debian --ubuntu)--opensuse[Search for text in the given database]' \
     '(--desc)--pull-request[Search for GitHub pull requests containing text]' \
     '--quiet[Make some output more quiet]' \
-    '(--macports --fink --opensuse --fedora --debian)--ubuntu[Search for text in the given package manager'\''s list]' \
+    '(--macports --fink --opensuse --fedora --debian --ubuntu)--repology[Search for text in the given database]' \
+    '(--repology --macports --fink --opensuse --fedora --debian)--ubuntu[Search for text in the given database]' \
     '--verbose[Make some output more verbose]'
 }
 
@@ -707,6 +709,17 @@ _brew_desc() {
     '--verbose[Make some output more verbose]' \
     - formula \
     '*::formula:__brew_formulae'
+}
+
+# brew developer
+_brew_developer() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]' \
+    - subcommand \
+    '*::subcommand:(state on off)'
 }
 
 # brew dispatch-build-bottle
@@ -1289,6 +1302,7 @@ _brew_pr_automerge() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--ignore-failures[Include pull requests that have failing status checks]' \
+    '--no-autosquash[Instruct `brew pr-publish` to skip automatically reformatting and rewording commits in the pull request to the preferred format]' \
     '--publish[Run `brew pr-publish` on matching pull requests]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
@@ -1306,6 +1320,7 @@ _brew_pr_publish() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--message[Message to include when autosquashing revision bumps, deletions, and rebuilds]' \
+    '--no-autosquash[Skip automatically reformatting and rewording commits in the pull request to the preferred format, even if supported on the target tap]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
     '--verbose[Make some output more verbose]' \
@@ -1490,19 +1505,20 @@ _brew_search() {
   _arguments \
     '--cask[Search online and locally for casks]' \
     '(--open)--closed[Search for only closed GitHub pull requests]' \
-    '(--macports --fink --opensuse --fedora --ubuntu)--debian[Search for text in the given package manager'\''s list]' \
+    '(--repology --macports --fink --opensuse --fedora --ubuntu)--debian[Search for text in the given database]' \
     '--debug[Display any debugging information]' \
     '(--pull-request)--desc[Search for formulae with a description matching text and casks with a name matching text]' \
-    '(--macports --fink --opensuse --debian --ubuntu)--fedora[Search for text in the given package manager'\''s list]' \
-    '(--macports --opensuse --fedora --debian --ubuntu)--fink[Search for text in the given package manager'\''s list]' \
+    '(--repology --macports --fink --opensuse --debian --ubuntu)--fedora[Search for text in the given database]' \
+    '(--repology --macports --opensuse --fedora --debian --ubuntu)--fink[Search for text in the given database]' \
     '--formula[Search online and locally for formulae]' \
     '--help[Show this message]' \
-    '(--fink --opensuse --fedora --debian --ubuntu)--macports[Search for text in the given package manager'\''s list]' \
+    '(--repology --fink --opensuse --fedora --debian --ubuntu)--macports[Search for text in the given database]' \
     '(--closed)--open[Search for only open GitHub pull requests]' \
-    '(--macports --fink --fedora --debian --ubuntu)--opensuse[Search for text in the given package manager'\''s list]' \
+    '(--repology --macports --fink --fedora --debian --ubuntu)--opensuse[Search for text in the given database]' \
     '(--desc)--pull-request[Search for GitHub pull requests containing text]' \
     '--quiet[Make some output more quiet]' \
-    '(--macports --fink --opensuse --fedora --debian)--ubuntu[Search for text in the given package manager'\''s list]' \
+    '(--macports --fink --opensuse --fedora --debian --ubuntu)--repology[Search for text in the given database]' \
+    '(--repology --macports --fink --opensuse --fedora --debian)--ubuntu[Search for text in the given database]' \
     '--verbose[Make some output more verbose]'
 }
 
