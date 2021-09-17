@@ -252,9 +252,11 @@ __brew_diagnostic_checks() {
 # brew --cache
 _brew___cache() {
   _arguments \
-    '(--force-bottle --cask)--build-from-source[Show the cache file used when building from source]' \
+    '(--build-from-source --force-bottle --bottle-tag --cask)--HEAD[Show the cache file used when building from HEAD]' \
+    '(--build-from-source --force-bottle --HEAD --cask)--bottle-tag[Show the cache file used when pouring a bottle for the given tag]' \
+    '(--force-bottle --bottle-tag --HEAD --cask)--build-from-source[Show the cache file used when building from source]' \
     '--debug[Display any debugging information]' \
-    '(--build-from-source --cask)--force-bottle[Show the cache file used when pouring a bottle]' \
+    '(--build-from-source --bottle-tag --HEAD --cask)--force-bottle[Show the cache file used when pouring a bottle]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
@@ -262,7 +264,7 @@ _brew___cache() {
     '(--cask)--formula[Only show cache files for formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
-    '(--build-from-source --force-bottle --formula)--cask[Only show cache files for casks]' \
+    '(--build-from-source --force-bottle --bottle-tag --HEAD --formula)--cask[Only show cache files for casks]' \
     '*::cask:__brew_casks'
 }
 
@@ -543,11 +545,12 @@ _brew_bump_formula_pr() {
 _brew_bump_revision() {
   _arguments \
     '--debug[Display any debugging information]' \
-    '--dry-run[Print what would be done rather than doing it]' \
+    '(--write-only)--dry-run[Print what would be done rather than doing it]' \
     '--help[Show this message]' \
     '--message[Append message to the default commit message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
+    '(--dry-run)--write-only[Make the expected file modifications without taking any Git actions]' \
     - formula \
     '*::formula:__brew_formulae'
 }
@@ -936,7 +939,7 @@ _brew_instal() {
     '(--formula)--colorpickerdir[Target location for Color Pickers (default: `~/Library/ColorPickers`)]' \
     '--debug[If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
-    '(--cask)--display-times[Print install times for each formula at the end of the run]' \
+    '(--cask)--display-times[Print install times for each package at the end of the run]' \
     '(--cask)--env[Disabled other than for internal Homebrew use]' \
     '(--cask)--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
@@ -988,7 +991,7 @@ _brew_install() {
     '(--formula)--colorpickerdir[Target location for Color Pickers (default: `~/Library/ColorPickers`)]' \
     '--debug[If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
-    '(--cask)--display-times[Print install times for each formula at the end of the run]' \
+    '(--cask)--display-times[Print install times for each package at the end of the run]' \
     '(--cask)--env[Disabled other than for internal Homebrew use]' \
     '(--cask)--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
@@ -1220,6 +1223,7 @@ _brew_man() {
 _brew_migrate() {
   _arguments \
     '--debug[Display any debugging information]' \
+    '--dry-run[Show what would be migrated, but do not actually migrate anything]' \
     '--force[Treat installed formula and provided formula as if they are from the same taps and migrate them anyway]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
@@ -1260,7 +1264,9 @@ _brew_outdated() {
   _arguments \
     '--debug[Display any debugging information]' \
     '--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
-    '--greedy[Print outdated casks with `auto_updates` or `version :latest`]' \
+    '--greedy[Print outdated casks with `auto_updates true` or `version :latest`]' \
+    '--greedy-auto-updates[Print outdated casks including those with `auto_updates true`]' \
+    '--greedy-latest[Print outdated casks including those with `version :latest`]' \
     '--help[Show this message]' \
     '(--quiet --verbose)--json[Print output in JSON format. There are two versions: `v1` and `v2`. `v1` is deprecated and is currently the default if no version is specified. `v2` prints outdated formulae and casks. ]' \
     '(--verbose --json)--quiet[List only the names of outdated kegs (takes precedence over `--verbose`)]' \
@@ -1309,7 +1315,7 @@ _brew_pr_automerge() {
     '--verbose[Make some output more verbose]' \
     '--with-label[Pull requests must have this label]' \
     '--without-approval[Pull requests do not require approval to be merged]' \
-    '--without-labels[Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `linux-only`, `linux to homebrew-core`)]'
+    '--without-labels[Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`, `linux to homebrew-core`)]'
 }
 
 # brew pr-publish
@@ -1867,13 +1873,15 @@ _brew_upgrade() {
     '(--formula)--colorpickerdir[Target location for Color Pickers (default: `~/Library/ColorPickers`)]' \
     '--debug[If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory]' \
     '(--formula)--dictionarydir[Target location for Dictionaries (default: `~/Library/Dictionaries`)]' \
-    '(--cask)--display-times[Print install times for each formula at the end of the run]' \
+    '(--cask)--display-times[Print install times for each package at the end of the run]' \
     '--dry-run[Show what would be upgraded, but do not actually upgrade anything]' \
     '(--cask)--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
     '(--formula)--fontdir[Target location for Fonts (default: `~/Library/Fonts`)]' \
     '--force[Install formulae without checking for previously installed keg-only or non-migrated versions. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask)]' \
     '(--cask --build-from-source)--force-bottle[Install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation]' \
     '(--formula)--greedy[Also include casks with `auto_updates true` or `version :latest`]' \
+    '(--formula)--greedy-auto-updates[Also include casks with `auto_updates true`]' \
+    '(--formula)--greedy-latest[Also include casks with `version :latest`]' \
     '--help[Show this message]' \
     '(--cask)--ignore-pinned[Set a successful exit status even if pinned formulae are not upgraded]' \
     '(--formula)--input-methoddir[Target location for Input Methods (default: `~/Library/Input Methods`)]' \
@@ -1896,7 +1904,7 @@ _brew_upgrade() {
     '(--formula)--vst-plugindir[Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)]' \
     '(--formula)--vst3-plugindir[Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)]' \
     - outdated_formula \
-    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --greedy --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae. If no named arguments are specified, upgrade only outdated formulae]' \
+    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --greedy --greedy-latest --greedy-auto-updates --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae. If no named arguments are specified, upgrade only outdated formulae]' \
     '*::outdated_formula:__brew_outdated_formulae' \
     - outdated_cask \
     '(--formulae --build-from-source --interactive --force-bottle --fetch-HEAD --ignore-pinned --keep-tmp --display-times)--cask[Treat all named arguments as casks. If no named arguments are specified, upgrade only outdated casks]' \
