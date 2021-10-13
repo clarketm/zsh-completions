@@ -809,6 +809,42 @@ _doctl_apps_list()
     noun_aliases=()
 }
 
+_doctl_apps_list-alerts()
+{
+    last_command="doctl_apps_list-alerts"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--format=")
+    local_nonpersistent_flags+=("--format=")
+    flags+=("--no-header")
+    local_nonpersistent_flags+=("--no-header")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _doctl_apps_list-deployments()
 {
     last_command="doctl_apps_list-deployments"
@@ -1303,6 +1339,44 @@ _doctl_apps_update()
     noun_aliases=()
 }
 
+_doctl_apps_update-alert-destinations()
+{
+    last_command="doctl_apps_update-alert-destinations"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--app-alert-destinations=")
+    local_nonpersistent_flags+=("--app-alert-destinations=")
+    flags+=("--format=")
+    local_nonpersistent_flags+=("--format=")
+    flags+=("--no-header")
+    local_nonpersistent_flags+=("--no-header")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _doctl_apps()
 {
     last_command="doctl_apps"
@@ -1340,6 +1414,11 @@ _doctl_apps()
         command_aliases+=("ls")
         aliashash["ls"]="list"
     fi
+    commands+=("list-alerts")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("la")
+        aliashash["la"]="list-alerts"
+    fi
     commands+=("list-deployments")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("lsd")
@@ -1362,6 +1441,11 @@ _doctl_apps()
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("u")
         aliashash["u"]="update"
+    fi
+    commands+=("update-alert-destinations")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("uad")
+        aliashash["uad"]="update-alert-destinations"
     fi
 
     flags=()
@@ -3091,6 +3175,8 @@ _doctl_compute_droplet_create()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--droplet-agent")
+    local_nonpersistent_flags+=("--droplet-agent")
     flags+=("--enable-backups")
     local_nonpersistent_flags+=("--enable-backups")
     flags+=("--enable-ipv6")
@@ -5629,6 +5715,8 @@ _doctl_compute_load-balancer_create()
 
     flags+=("--algorithm=")
     local_nonpersistent_flags+=("--algorithm=")
+    flags+=("--disable-lets-encrypt-dns-records")
+    local_nonpersistent_flags+=("--disable-lets-encrypt-dns-records")
     flags+=("--droplet-ids=")
     local_nonpersistent_flags+=("--droplet-ids=")
     flags+=("--enable-backend-keepalive")
@@ -5647,6 +5735,8 @@ _doctl_compute_load-balancer_create()
     local_nonpersistent_flags+=("--region=")
     flags+=("--size=")
     local_nonpersistent_flags+=("--size=")
+    flags+=("--size-unit=")
+    local_nonpersistent_flags+=("--size-unit=")
     flags+=("--sticky-sessions=")
     local_nonpersistent_flags+=("--sticky-sessions=")
     flags+=("--tag-name=")
@@ -5862,6 +5952,8 @@ _doctl_compute_load-balancer_update()
 
     flags+=("--algorithm=")
     local_nonpersistent_flags+=("--algorithm=")
+    flags+=("--disable-lets-encrypt-dns-records")
+    local_nonpersistent_flags+=("--disable-lets-encrypt-dns-records")
     flags+=("--droplet-ids=")
     local_nonpersistent_flags+=("--droplet-ids=")
     flags+=("--enable-backend-keepalive")
@@ -5880,6 +5972,8 @@ _doctl_compute_load-balancer_update()
     local_nonpersistent_flags+=("--region=")
     flags+=("--size=")
     local_nonpersistent_flags+=("--size=")
+    flags+=("--size-unit=")
+    local_nonpersistent_flags+=("--size-unit=")
     flags+=("--sticky-sessions=")
     local_nonpersistent_flags+=("--sticky-sessions=")
     flags+=("--tag-name=")
@@ -9416,6 +9510,8 @@ _doctl_kubernetes_cluster_create()
     local_nonpersistent_flags+=("--auto-upgrade")
     flags+=("--count=")
     local_nonpersistent_flags+=("--count=")
+    flags+=("--ha")
+    local_nonpersistent_flags+=("--ha")
     flags+=("--maintenance-window=")
     local_nonpersistent_flags+=("--maintenance-window=")
     flags+=("--node-pool=")
@@ -10629,6 +10725,301 @@ _doctl_kubernetes()
         aliashash["o"]="options"
         command_aliases+=("opts")
         aliashash["opts"]="options"
+    fi
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_monitoring_alert_create()
+{
+    last_command="doctl_monitoring_alert_create"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--compare=")
+    local_nonpersistent_flags+=("--compare=")
+    flags+=("--description=")
+    local_nonpersistent_flags+=("--description=")
+    flags+=("--emails=")
+    local_nonpersistent_flags+=("--emails=")
+    flags+=("--enabled")
+    local_nonpersistent_flags+=("--enabled")
+    flags+=("--entities=")
+    local_nonpersistent_flags+=("--entities=")
+    flags+=("--slack-channels=")
+    local_nonpersistent_flags+=("--slack-channels=")
+    flags+=("--slack-urls=")
+    local_nonpersistent_flags+=("--slack-urls=")
+    flags+=("--tags=")
+    local_nonpersistent_flags+=("--tags=")
+    flags+=("--type=")
+    local_nonpersistent_flags+=("--type=")
+    flags+=("--value=")
+    local_nonpersistent_flags+=("--value=")
+    flags+=("--window=")
+    local_nonpersistent_flags+=("--window=")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_monitoring_alert_delete()
+{
+    last_command="doctl_monitoring_alert_delete"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--force")
+    flags+=("-f")
+    local_nonpersistent_flags+=("--force")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_monitoring_alert_get()
+{
+    last_command="doctl_monitoring_alert_get"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--format=")
+    local_nonpersistent_flags+=("--format=")
+    flags+=("--no-header")
+    local_nonpersistent_flags+=("--no-header")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_monitoring_alert_list()
+{
+    last_command="doctl_monitoring_alert_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--format=")
+    local_nonpersistent_flags+=("--format=")
+    flags+=("--no-header")
+    local_nonpersistent_flags+=("--no-header")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_monitoring_alert_update()
+{
+    last_command="doctl_monitoring_alert_update"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--compare=")
+    local_nonpersistent_flags+=("--compare=")
+    flags+=("--description=")
+    local_nonpersistent_flags+=("--description=")
+    flags+=("--emails=")
+    local_nonpersistent_flags+=("--emails=")
+    flags+=("--enabled")
+    local_nonpersistent_flags+=("--enabled")
+    flags+=("--entities=")
+    local_nonpersistent_flags+=("--entities=")
+    flags+=("--slack-channels=")
+    local_nonpersistent_flags+=("--slack-channels=")
+    flags+=("--slack-urls=")
+    local_nonpersistent_flags+=("--slack-urls=")
+    flags+=("--tags=")
+    local_nonpersistent_flags+=("--tags=")
+    flags+=("--type=")
+    local_nonpersistent_flags+=("--type=")
+    flags+=("--value=")
+    local_nonpersistent_flags+=("--value=")
+    flags+=("--window=")
+    local_nonpersistent_flags+=("--window=")
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_monitoring_alert()
+{
+    last_command="doctl_monitoring_alert"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("create")
+    commands+=("delete")
+    commands+=("get")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+    commands+=("update")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--access-token=")
+    two_word_flags+=("-t")
+    flags+=("--api-url=")
+    two_word_flags+=("-u")
+    flags+=("--config=")
+    two_word_flags+=("-c")
+    flags+=("--context=")
+    flags+=("--output=")
+    two_word_flags+=("-o")
+    flags+=("--trace")
+    flags+=("--verbose")
+    flags+=("-v")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_doctl_monitoring()
+{
+    last_command="doctl_monitoring"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("alert")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("a")
+        aliashash["a"]="alert"
+        command_aliases+=("alerts")
+        aliashash["alerts"]="alert"
     fi
 
     flags=()
@@ -12176,6 +12567,7 @@ _doctl_root_command()
         command_aliases+=("kube")
         aliashash["kube"]="kubernetes"
     fi
+    commands+=("monitoring")
     commands+=("projects")
     commands+=("registry")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
