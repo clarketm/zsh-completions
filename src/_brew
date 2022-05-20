@@ -531,6 +531,9 @@ _brew_bump_formula_pr() {
     '--no-browse[Print the pull request URL instead of opening in a browser]' \
     '--no-fork[Don'\''t try to fork the repository]' \
     '(--no-audit)--online[Run `brew audit --online` before opening the PR]' \
+    '--python-exclude-packages[Exclude these Python packages when finding resources]' \
+    '--python-extra-packages[Include these additional Python packages when finding resources]' \
+    '--python-package-name[Use the specified package-name when finding Python resources for formula. If no package name is specified, it will be inferred from the formula'\''s stable URL]' \
     '--quiet[Make some output more quiet]' \
     '--revision[Specify the new commit revision corresponding to the specified git tag or specified version]' \
     '--sha256[Specify the SHA-256 checksum of the new download]' \
@@ -981,8 +984,9 @@ _brew_instal() {
     '--verbose[Print the verification and postinstall steps]' \
     '(--formula)--vst-plugindir[Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)]' \
     '(--formula)--vst3-plugindir[Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)]' \
+    '(--formula)--zap[For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*]' \
     - formula \
-    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
+    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --zap --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
     '(--formulae --env --ignore-dependencies --only-dependencies --cc --build-from-source --force-bottle --include-test --HEAD --fetch-HEAD --keep-tmp --build-bottle --bottle-arch --display-times --interactive --git --overwrite)--cask[Treat all named arguments as casks]' \
@@ -1033,8 +1037,9 @@ _brew_install() {
     '--verbose[Print the verification and postinstall steps]' \
     '(--formula)--vst-plugindir[Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)]' \
     '(--formula)--vst3-plugindir[Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)]' \
+    '(--formula)--zap[For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*]' \
     - formula \
-    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
+    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --zap --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
     '(--formulae --env --ignore-dependencies --only-dependencies --cc --build-from-source --force-bottle --include-test --HEAD --fetch-HEAD --keep-tmp --build-bottle --bottle-arch --display-times --interactive --git --overwrite)--cask[Treat all named arguments as casks]' \
@@ -1321,7 +1326,8 @@ _brew_pr_automerge() {
     '--verbose[Make some output more verbose]' \
     '--with-label[Pull requests must have this label]' \
     '--without-approval[Pull requests do not require approval to be merged]' \
-    '--without-labels[Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`)]'
+    '--without-labels[Pull requests must not have these labels (default: `do not merge`, `new formula`, `automerge-skip`)]' \
+    '--workflow[Workflow file to use with `brew pr-publish`]'
 }
 
 # brew pr-publish
@@ -1441,8 +1447,9 @@ _brew_reinstall() {
     '--verbose[Print the verification and postinstall steps]' \
     '(--formula)--vst-plugindir[Target location for VST Plugins (default: `~/Library/Audio/Plug-Ins/VST`)]' \
     '(--formula)--vst3-plugindir[Target location for VST3 Plugins (default: `~/Library/Audio/Plug-Ins/VST3`)]' \
+    '(--formula)--zap[For use with `brew reinstall --cask`. Remove all files associated with a cask. *May remove files which are shared between applications.*]' \
     - formula \
-    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
+    '(--casks --binaries --require-sha --quarantine --skip-cask-deps --zap --appdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
     '(--formulae --build-from-source --interactive --force-bottle --keep-tmp --display-times --git)--cask[Treat all named arguments as casks]' \
@@ -1624,6 +1631,7 @@ _brew_tap_new() {
 # brew tc
 _brew_tc() {
   _arguments \
+    '--all[Regenerate all RBI files rather than just updated gems]' \
     '--debug[Display any debugging information]' \
     '(--file)--dir[Typecheck all files in a specific directory]' \
     '--fail-if-not-changed[Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update]' \
@@ -1656,13 +1664,14 @@ _brew_test() {
 _brew_tests() {
   _arguments \
     '--byebug[Enable debugging using byebug]' \
+    '(--only)--changed[Only runs tests on files that were changed from the master branch]' \
     '--coverage[Generate code coverage reports]' \
     '--debug[Display any debugging information]' \
     '--generic[Run only OS-agnostic tests]' \
     '--help[Show this message]' \
     '--no-compat[Do not load the compatibility layer when running tests]' \
     '--online[Include tests that use the GitHub API and tests that use any of the taps for official external commands]' \
-    '--only[Run only test_script`_spec.rb`. Appending `:`line_number will start at a specific line]' \
+    '(--changed)--only[Run only test_script`_spec.rb`. Appending `:`line_number will start at a specific line]' \
     '--quiet[Make some output more quiet]' \
     '--seed[Randomise tests with the specified value instead of a random seed]' \
     '--verbose[Make some output more verbose]'
@@ -1671,6 +1680,7 @@ _brew_tests() {
 # brew typecheck
 _brew_typecheck() {
   _arguments \
+    '--all[Regenerate all RBI files rather than just updated gems]' \
     '--debug[Display any debugging information]' \
     '(--file)--dir[Typecheck all files in a specific directory]' \
     '--fail-if-not-changed[Return a failing status code if all gems are up to date and gem definitions do not need a tapioca update]' \
@@ -1792,6 +1802,7 @@ _brew_up() {
     '--help[Show this message]' \
     '--merge[Use `git merge` to apply updates (rather than `git rebase`)]' \
     '--preinstall[Run on auto-updates (e.g. before `brew install`). Skips some slower steps]' \
+    '--quiet[Make some output more quiet]' \
     '--verbose[Print the directories checked and `git` operations performed]'
 }
 
@@ -1803,6 +1814,7 @@ _brew_update() {
     '--help[Show this message]' \
     '--merge[Use `git merge` to apply updates (rather than `git rebase`)]' \
     '--preinstall[Run on auto-updates (e.g. before `brew install`). Skips some slower steps]' \
+    '--quiet[Make some output more quiet]' \
     '--verbose[Print the directories checked and `git` operations performed]'
 }
 
