@@ -152,6 +152,7 @@ __brew_internal_commands() {
     'commands:Show lists of built-in and external commands'
     'completions:Control whether Homebrew automatically links external tap shell completion files'
     'config:Show Homebrew and system configuration info useful for debugging'
+    'contributions:Contributions to Homebrew repos for a user'
     'create:Generate a formula or, with `--cask`, a cask for the downloadable file at URL and open it in the editor'
     'deps:Show dependencies for formula'
     'desc:Display formula'\''s name and one-line description'
@@ -382,6 +383,7 @@ _brew_abv() {
     '(--all)--installed[Print JSON of formulae that are currently installed]' \
     '--json[Print a JSON representation. Currently the default value for version is `v1` for formula. For formula and cask use `v2`. See the docs for examples of using the JSON output: https://docs.brew.sh/Querying-Brew]' \
     '--quiet[Make some output more quiet]' \
+    '--variations[Include the variations hash in each formula'\''s JSON output]' \
     '--verbose[Show more verbose analytics data for formula]' \
     - formula \
     '(--cask)--formula[Treat all named arguments as formulae]' \
@@ -651,6 +653,18 @@ _brew_config() {
     '--verbose[Make some output more verbose]'
 }
 
+# brew contributions
+_brew_contributions() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--from[Date (ISO-8601 format) to start searching contributions]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--repositories[Specify a comma-separated (no spaces) list of repositories to search. Supported repositories: `brew`, `core`, `cask`, `aliases`, `autoupdate`, `bundle`, `command-not-found`, `test-bot`, `services`, `cask-drivers`, `cask-fonts` and `cask-versions`.Omitting this flag, or specifying `--repositories=all`, will search all repositories]' \
+    '--to[Date (ISO-8601 format) to stop searching contributions]' \
+    '--verbose[Make some output more verbose]'
+}
+
 # brew create
 _brew_create() {
   _arguments \
@@ -744,10 +758,10 @@ _brew_dispatch_build_bottle() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--issue[If specified, post a comment to this issue number if the job fails]' \
-    '(--macos --linux-self-hosted)--linux[Dispatch bottle for Linux (using GitHub runners)]' \
-    '(--macos --linux)--linux-self-hosted[Dispatch bottle for Linux (using self-hosted runner)]' \
+    '(--linux-self-hosted)--linux[Dispatch bottle for Linux (using GitHub runners)]' \
+    '(--linux)--linux-self-hosted[Dispatch bottle for Linux (using self-hosted runner)]' \
     '--linux-wheezy[Use Debian Wheezy container for building the bottle on Linux]' \
-    '(--linux --linux-self-hosted)--macos[Version(s) of macOS the bottle should be built for]' \
+    '--macos[Version(s) of macOS the bottle should be built for]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
     '--timeout[Build timeout (in minutes, default: 60)]' \
@@ -931,6 +945,7 @@ _brew_info() {
     '(--all)--installed[Print JSON of formulae that are currently installed]' \
     '--json[Print a JSON representation. Currently the default value for version is `v1` for formula. For formula and cask use `v2`. See the docs for examples of using the JSON output: https://docs.brew.sh/Querying-Brew]' \
     '--quiet[Make some output more quiet]' \
+    '--variations[Include the variations hash in each formula'\''s JSON output]' \
     '--verbose[Show more verbose analytics data for formula]' \
     - formula \
     '(--cask)--formula[Treat all named arguments as formulae]' \
@@ -1276,9 +1291,9 @@ _brew_outdated() {
   _arguments \
     '--debug[Display any debugging information]' \
     '--fetch-HEAD[Fetch the upstream repository to detect if the HEAD installation of the formula is outdated. Otherwise, the repository'\''s HEAD will only be checked for updates when a new stable or development version has been released]' \
-    '--greedy[Print outdated casks with `auto_updates true` or `version :latest`]' \
-    '--greedy-auto-updates[Print outdated casks including those with `auto_updates true`]' \
-    '--greedy-latest[Print outdated casks including those with `version :latest`]' \
+    '--greedy[Also include outdated casks with `auto_updates true` or `version :latest`]' \
+    '--greedy-auto-updates[Also include outdated casks including those with `auto_updates true`]' \
+    '--greedy-latest[Also include outdated casks including those with `version :latest`]' \
     '--help[Show this message]' \
     '(--quiet --verbose)--json[Print output in JSON format. There are two versions: `v1` and `v2`. `v1` is deprecated and is currently the default if no version is specified. `v2` prints outdated formulae and casks]' \
     '(--verbose --json)--quiet[List only the names of outdated kegs (takes precedence over `--verbose`)]' \
