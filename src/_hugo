@@ -1,8 +1,8 @@
-#compdef _skaffold skaffold
+#compdef hugo
 
-# zsh completion for skaffold                             -*- shell-script -*-
+# zsh completion for hugo                                 -*- shell-script -*-
 
-__skaffold_debug()
+__hugo_debug()
 {
     local file="$BASH_COMP_DEBUG_FILE"
     if [[ -n ${file} ]]; then
@@ -10,7 +10,7 @@ __skaffold_debug()
     fi
 }
 
-_skaffold()
+_hugo()
 {
     local shellCompDirectiveError=1
     local shellCompDirectiveNoSpace=2
@@ -21,21 +21,21 @@ _skaffold()
     local lastParam lastChar flagPrefix requestComp out directive comp lastComp noSpace
     local -a completions
 
-    __skaffold_debug "\n========= starting completion logic =========="
-    __skaffold_debug "CURRENT: ${CURRENT}, words[*]: ${words[*]}"
+    __hugo_debug "\n========= starting completion logic =========="
+    __hugo_debug "CURRENT: ${CURRENT}, words[*]: ${words[*]}"
 
     # The user could have moved the cursor backwards on the command-line.
     # We need to trigger completion from the $CURRENT location, so we need
     # to truncate the command-line ($words) up to the $CURRENT location.
     # (We cannot use $CURSOR as its value does not work when a command is an alias.)
     words=("${=words[1,CURRENT]}")
-    __skaffold_debug "Truncated words[*]: ${words[*]},"
+    __hugo_debug "Truncated words[*]: ${words[*]},"
 
     lastParam=${words[-1]}
     lastChar=${lastParam[-1]}
-    __skaffold_debug "lastParam: ${lastParam}, lastChar: ${lastChar}"
+    __hugo_debug "lastParam: ${lastParam}, lastChar: ${lastChar}"
 
-    # For zsh, when completing a flag with an = (e.g., skaffold -n=<TAB>)
+    # For zsh, when completing a flag with an = (e.g., hugo -n=<TAB>)
     # completions must be prefixed with the flag
     setopt local_options BASH_REMATCH
     if [[ "${lastParam}" =~ '-.*=' ]]; then
@@ -48,22 +48,22 @@ _skaffold()
     if [ "${lastChar}" = "" ]; then
         # If the last parameter is complete (there is a space following it)
         # We add an extra empty parameter so we can indicate this to the go completion code.
-        __skaffold_debug "Adding extra empty parameter"
+        __hugo_debug "Adding extra empty parameter"
         requestComp="${requestComp} \"\""
     fi
 
-    __skaffold_debug "About to call: eval ${requestComp}"
+    __hugo_debug "About to call: eval ${requestComp}"
 
     # Use eval to handle any environment variables and such
     out=$(eval ${requestComp} 2>/dev/null)
-    __skaffold_debug "completion output: ${out}"
+    __hugo_debug "completion output: ${out}"
 
     # Extract the directive integer following a : from the last line
     local lastLine
     while IFS='\n' read -r line; do
         lastLine=${line}
     done < <(printf "%s\n" "${out[@]}")
-    __skaffold_debug "last line: ${lastLine}"
+    __hugo_debug "last line: ${lastLine}"
 
     if [ "${lastLine[1]}" = : ]; then
         directive=${lastLine[2,-1]}
@@ -73,20 +73,37 @@ _skaffold()
         out=${out[1,-$suffix]}
     else
         # There is no directive specified.  Leave $out as is.
-        __skaffold_debug "No directive found.  Setting do default"
+        __hugo_debug "No directive found.  Setting do default"
         directive=0
     fi
 
-    __skaffold_debug "directive: ${directive}"
-    __skaffold_debug "completions: ${out}"
-    __skaffold_debug "flagPrefix: ${flagPrefix}"
+    __hugo_debug "directive: ${directive}"
+    __hugo_debug "completions: ${out}"
+    __hugo_debug "flagPrefix: ${flagPrefix}"
 
     if [ $((directive & shellCompDirectiveError)) -ne 0 ]; then
-        __skaffold_debug "Completion received error. Ignoring completions."
+        __hugo_debug "Completion received error. Ignoring completions."
         return
     fi
 
+    local activeHelpMarker="_activeHelp_ "
+    local endIndex=${#activeHelpMarker}
+    local startIndex=$((${#activeHelpMarker}+1))
+    local hasActiveHelp=0
     while IFS='\n' read -r comp; do
+        # Check if this is an activeHelp statement (i.e., prefixed with $activeHelpMarker)
+        if [ "${comp[1,$endIndex]}" = "$activeHelpMarker" ];then
+            __hugo_debug "ActiveHelp found: $comp"
+            comp="${comp[$startIndex,-1]}"
+            if [ -n "$comp" ]; then
+                compadd -x "${comp}"
+                __hugo_debug "ActiveHelp will need delimiter"
+                hasActiveHelp=1
+            fi
+
+            continue
+        fi
+
         if [ -n "$comp" ]; then
             # If requested, completions are returned with a description.
             # The description is preceded by a TAB character.
@@ -94,17 +111,28 @@ _skaffold()
             # We first need to escape any : as part of the completion itself.
             comp=${comp//:/\\:}
 
-            local tab=$(printf '\t')
+            local tab="$(printf '\t')"
             comp=${comp//$tab/:}
 
-            __skaffold_debug "Adding completion: ${comp}"
+            __hugo_debug "Adding completion: ${comp}"
             completions+=${comp}
             lastComp=$comp
         fi
     done < <(printf "%s\n" "${out[@]}")
 
+    # Add a delimiter after the activeHelp statements, but only if:
+    # - there are completions following the activeHelp statements, or
+    # - file completion will be performed (so there will be choices after the activeHelp)
+    if [ $hasActiveHelp -eq 1 ]; then
+        if [ ${#completions} -ne 0 ] || [ $((directive & shellCompDirectiveNoFileComp)) -eq 0 ]; then
+            __hugo_debug "Adding activeHelp delimiter"
+            compadd -x "--"
+            hasActiveHelp=0
+        fi
+    fi
+
     if [ $((directive & shellCompDirectiveNoSpace)) -ne 0 ]; then
-        __skaffold_debug "Activating nospace."
+        __hugo_debug "Activating nospace."
         noSpace="-S ''"
     fi
 
@@ -121,17 +149,17 @@ _skaffold()
         done
         filteringCmd+=" ${flagPrefix}"
 
-        __skaffold_debug "File filtering command: $filteringCmd"
+        __hugo_debug "File filtering command: $filteringCmd"
         _arguments '*:filename:'"$filteringCmd"
     elif [ $((directive & shellCompDirectiveFilterDirs)) -ne 0 ]; then
         # File completion for directories only
         local subdir
         subdir="${completions[1]}"
         if [ -n "$subdir" ]; then
-            __skaffold_debug "Listing directories in $subdir"
+            __hugo_debug "Listing directories in $subdir"
             pushd "${subdir}" >/dev/null 2>&1
         else
-            __skaffold_debug "Listing directories in ."
+            __hugo_debug "Listing directories in ."
         fi
 
         local result
@@ -142,17 +170,17 @@ _skaffold()
         fi
         return $result
     else
-        __skaffold_debug "Calling _describe"
+        __hugo_debug "Calling _describe"
         if eval _describe "completions" completions $flagPrefix $noSpace; then
-            __skaffold_debug "_describe found some completions"
+            __hugo_debug "_describe found some completions"
 
             # Return the success of having called _describe
             return 0
         else
-            __skaffold_debug "_describe did not find completions."
-            __skaffold_debug "Checking if we should do file completion."
+            __hugo_debug "_describe did not find completions."
+            __hugo_debug "Checking if we should do file completion."
             if [ $((directive & shellCompDirectiveNoFileComp)) -ne 0 ]; then
-                __skaffold_debug "deactivating file completion"
+                __hugo_debug "deactivating file completion"
 
                 # We must return an error code here to let zsh know that there were no
                 # completions found by _describe; this is what will trigger other
@@ -161,7 +189,7 @@ _skaffold()
                 return 1
             else
                 # Perform file completion
-                __skaffold_debug "Activating file completion"
+                __hugo_debug "Activating file completion"
 
                 # We must return the result of this command, so it must be the
                 # last command, or else we must store its result to return it.
@@ -172,8 +200,6 @@ _skaffold()
 }
 
 # don't run the completion function when being source-ed or eval-ed
-if [ "$funcstack[1]" = "_skaffold" ]; then
-    _skaffold
+if [ "$funcstack[1]" = "_hugo" ]; then
+    _hugo
 fi
-
-compdef _skaffold skaffold
