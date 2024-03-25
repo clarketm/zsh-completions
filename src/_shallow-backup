@@ -1,6 +1,6 @@
-#compdef gtk-launch gtk4-launch
+#compdef shallow-backup
 # ------------------------------------------------------------------------------
-# Copyright (c) 2011 Github zsh-users - https://github.com/zsh-users
+# Copyright (c) 2023 Aaron Lichtman -- https://github.com/alichtman
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
 #       names of its contributors may be used to endorse or promote products
 #       derived from this software without specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND
 # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 # DISCLAIMED. IN NO EVENT SHALL ZSH-USERS BE LIABLE FOR ANY
@@ -28,52 +28,43 @@
 # Description
 # -----------
 #
-#  Completion script for gtk-launch on gtk+-3.24.37, gtk4-launch-4.10.4
-#  (https://www.gtk.org/).
+#  Completion script for shallow-backup: https://github.com/alichtman/shallow-backup
 #
 # ------------------------------------------------------------------------------
 # Authors
 # -------
 #
-#  * ncaq <ncaq@ncaq.net>
+#  * Aaron Lichtman (https://github.com/alichtman)
 #
 # ------------------------------------------------------------------------------
 
-_gtk-launch() {
-  local ret=1
 
-  if [[ $service == "gtk-launch" ]]; then
-    _arguments -S -A "-*" \
-      '(- *)'{-h,--help}'[Show help options]' \
-      '(- *)'{-v,--version}'[Show program version]' \
-      '(- *)'--help-all'[Show all help options]' \
-      '(- *)'--help-gtk'[Show GTK+ Options]' \
-      '(- *)'--display='[X display to use]:display:_x_display' \
-      '--class=[Program class as used by the window manager]:class' \
-      '--name=[Program name as used by the window manager]:name' \
-      '--gtk-module=[Load additional GTK+ modules]:module' \
-      '--g-fatal-warnings[Make all warnings fatal]' \
-      '1: :_gtk-launch-apps' \
-      '*:: :_files' && ret=0
-  else
-    # gtk4-launch
-    _arguments -S -A "-*" \
-      '(- *)'{-h,--help}'[Show help options]' \
-      '(- *)'{-v,--version}'[Show program version]' \
-      '1: :_gtk-launch-apps' \
-      '*:: :_files' && ret=0
-  fi
-
-  return ret
+_shallow-backup() {
+    _arguments \
+      '(- 1 *)'{-h,--help}'[Show help and exit]' \
+      '(- 1 *)'{-v,--version}'[Print version]' \
+      '--add-dot[Add a dotfile or dotfolder to config by path]:PATH:_files' \
+      '--backup-all[Full back up]' \
+      '--backup-configs[Back up app config files]' \
+      '--backup-dots[Back up dotfiles]' \
+      '--backup-fonts[Back up installed fonts]' \
+      '--backup-packages[Back up package libraries]' \
+      '--delete-config[Delete config file]' \
+      '--destroy-backup[Delete backup directory]' \
+      '--dry-run[Do not backup or reinstall any files, just give verbose output]' \
+      '--new-path[Input a new back up directory path]:PATH:_files -/' \
+      '--no-new-backup-path-prompt[Skip setting new back up directory path prompt]' \
+      '--no-splash[Do not display splash screen]' \
+      '--reinstall-all[Full reinstallation]' \
+      '--reinstall-configs[Reinstall configs]' \
+      '--reinstall-dots[Reinstall dotfiles and dotfolders]' \
+      '--reinstall-fonts[Reinstall fonts]' \
+      '--reinstall-packages[Reinstall packages]' \
+      '--remote[Set remote URL for the git repo]':url \
+      '--show[Display config file]'
 }
 
-(( $+functions[_gtk-launch-apps] )) ||
-_gtk-launch-apps() {
-  local -a apps=(/usr/share/applications/*.desktop(:r:t))
-  _values 'applications' $apps
-}
-
-_gtk-launch "$@"
+_shallow-backup
 
 # Local Variables:
 # mode: Shell-Script
