@@ -1,0 +1,4 @@
+#compdef az
+
+autoload -U +X bashcompinit && bashcompinit
+eval "$(register-python-argcomplete az)"
