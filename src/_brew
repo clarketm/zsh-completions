@@ -139,8 +139,9 @@ __brew_internal_commands() {
     '--prefix:Display Homebrew'\''s install path'
     '--repository:Display where Homebrew'\''s Git repository is located'
     '--version:Print the version numbers of Homebrew, Homebrew/homebrew-core and Homebrew/homebrew-cask (if tapped) to standard output'
+    'alias:Show existing aliases'
     'analytics:Control Homebrew'\''s anonymous aggregate user behaviour analytics'
-    'audit:Check formula for Homebrew coding style violations'
+    'audit:Check formula or cask for Homebrew coding style violations'
     'autoremove:Uninstall formulae that were only installed as a dependency of another formula and are now no longer needed'
     'bottle:Generate a bottle (binary package) from a formula that was installed with `--build-bottle`'
     'bump:Displays out-of-date packages and the latest version available'
@@ -169,7 +170,9 @@ __brew_internal_commands() {
     'extract:Look through repository history to find the most recent version of formula and create a copy in tap'
     'fetch:Download a bottle (if available) or source packages for formulae and binaries for casks'
     'formula:Display the path where formula is located'
+    'formula-analytics:Query Homebrew'\''s analytics'
     'formulae:List all locally installable formulae including short names'
+    'generate-analytics-api:Generates analytics API data files for formulae.brew.sh'
     'generate-cask-api:Generate `homebrew/cask` API data files for https://formulae.brew.sh'
     'generate-cask-ci-matrix:Generate a GitHub Actions matrix for a given pull request URL or list of cask names'
     'generate-formula-api:Generate `homebrew/core` API data files for https://formulae.brew.sh'
@@ -219,6 +222,7 @@ __brew_internal_commands() {
     'test:Run the test method provided by an installed formula'
     'tests:Run Homebrew'\''s unit and integration tests'
     'typecheck:Check for typechecking errors using Sorbet'
+    'unalias:Remove aliases'
     'unbottled:Show the unbottled dependents of formulae'
     'uninstall:Uninstall a formula or cask'
     'unlink:Remove symlinks for formula from Homebrew'\''s prefix'
@@ -237,6 +241,7 @@ __brew_internal_commands() {
     'uses:Show formulae and casks that specify formula as a dependency; that is, show dependents of formula'
     'vendor-gems:Install and commit Homebrew'\''s vendored gems'
     'vendor-install:Install Homebrew'\''s portable Ruby'
+    'verify:Verify the build provenance of bottles using GitHub'\''s attestation tools'
   )
   _describe -t internal-commands 'internal commands' commands
 }
@@ -431,6 +436,16 @@ _brew_abv() {
     '*::cask:__brew_casks'
 }
 
+# brew alias
+_brew_alias() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--edit[Edit aliases in a text editor. Either one or all aliases may be opened at once. If the given alias doesn'\''t exist it'\''ll be pre-populated with a template]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
+}
+
 # brew analytics
 _brew_analytics() {
   _arguments \
@@ -457,16 +472,16 @@ _brew_audit() {
     '--help[Show this message]' \
     '(--all)--installed[Only check formulae and casks that are currently installed]' \
     '--new[Run various additional style checks to determine if a new formula or cask is eligible for Homebrew. This should be used when creating new formulae or casks and implies `--strict` and `--online`]' \
-    '--no-signing[Audit for signed apps, which are required on ARM]' \
+    '--no-signing[Audit for app signatures, which are required by macOS on ARM]' \
     '--online[Run additional, slower style checks that require a network connection]' \
     '(--except --only-cops --except-cops)--only[Specify a comma-separated method list to only run the methods named `audit_`method]' \
     '(--except-cops --strict --except-cops --only)--only-cops[Specify a comma-separated cops list to check for violations of only the listed RuboCop cops]' \
     '--os[Audit the given operating system. (Pass `all` to audit all operating systems.)]' \
     '--quiet[Make some output more quiet]' \
-    '--signing[Audit for signed apps, which are required on ARM]' \
+    '--signing[Audit for app signatures, which are required by macOS on ARM]' \
     '--skip-style[Skip running non-RuboCop style checks. Useful if you plan on running `brew style` separately. Enabled by default unless a formula is specified by name]' \
     '(--only-cops --except-cops)--strict[Run additional, stricter style checks]' \
-    '--tap[Check the formulae within the given tap, specified as user`/`repo]' \
+    '--tap[Check formulae and casks within the given tap, specified as user`/`repo]' \
     '--token-conflicts[Audit for token conflicts]' \
     '--verbose[Make some output more verbose]' \
     - formula \
@@ -715,7 +730,7 @@ _brew_contributions() {
     '--from[Date (ISO-8601 format) to start searching contributions. Omitting this flag searches the last year]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
-    '--repositories[Specify a comma-separated list of repositories to search. Supported repositories: `brew`, `core`, `cask`, `aliases`, `bundle`, `command-not-found`, `test-bot` and `services`. Omitting this flag, or specifying `--repositories=primary`, searches only the main repositories: brew,core,cask. Specifying `--repositories=all`, searches all repositories. ]' \
+    '--repositories[Specify a comma-separated list of repositories to search. Supported repositories: `brew`, `core`, `cask`, `bundle`, `command-not-found`, `test-bot` and `services`. Omitting this flag, or specifying `--repositories=primary`, searches only the main repositories: brew,core,cask. Specifying `--repositories=all`, searches all repositories. ]' \
     '--to[Date (ISO-8601 format) to stop searching contributions]' \
     '--user[Specify a comma-separated list of GitHub usernames or email addresses to find contributions from. Omitting this flag searches maintainers]' \
     '--verbose[Make some output more verbose]'
@@ -725,27 +740,28 @@ _brew_contributions() {
 _brew_create() {
   _arguments \
     '(--cask)--HEAD[Indicate that URL points to the package'\''s repository rather than a file]' \
-    '(--cmake --crystal --go --meson --node --perl --python --ruby --rust --cask)--autotools[Create a basic template for an Autotools-style build]' \
-    '(--autotools --cmake --crystal --go --meson --node --perl --python --ruby --rust --HEAD --set-license)--cask[Create a basic template for a cask]' \
-    '(--autotools --crystal --go --meson --node --perl --python --ruby --rust --cask)--cmake[Create a basic template for a CMake-style build]' \
-    '(--autotools --cmake --go --meson --node --perl --python --ruby --rust --cask)--crystal[Create a basic template for a Crystal build]' \
+    '(--cmake --crystal --go --meson --node --perl --python --ruby --rust --zig --cask)--autotools[Create a basic template for an Autotools-style build]' \
+    '(--autotools --cmake --crystal --go --meson --node --perl --python --ruby --rust --zig --HEAD --set-license)--cask[Create a basic template for a cask]' \
+    '(--autotools --crystal --go --meson --node --perl --python --ruby --rust --zig --cask)--cmake[Create a basic template for a CMake-style build]' \
+    '(--autotools --cmake --go --meson --node --perl --python --ruby --rust --zig --cask)--crystal[Create a basic template for a Crystal build]' \
     '--debug[Display any debugging information]' \
     '--force[Ignore errors for disallowed formula names and names that shadow aliases]' \
-    '(--autotools --cmake --crystal --meson --node --perl --python --ruby --rust --cask)--go[Create a basic template for a Go build]' \
+    '(--autotools --cmake --crystal --meson --node --perl --python --ruby --rust --zig --cask)--go[Create a basic template for a Go build]' \
     '--help[Show this message]' \
-    '(--autotools --cmake --crystal --go --node --perl --python --ruby --rust --cask)--meson[Create a basic template for a Meson-style build]' \
+    '(--autotools --cmake --crystal --go --node --perl --python --ruby --rust --zig --cask)--meson[Create a basic template for a Meson-style build]' \
     '--no-fetch[Homebrew will not download URL to the cache and will thus not add its SHA-256 to the formula for you, nor will it check the GitHub API for GitHub projects (to fill out its description and homepage)]' \
-    '(--autotools --cmake --crystal --go --meson --perl --python --ruby --rust --cask)--node[Create a basic template for a Node build]' \
-    '(--autotools --cmake --crystal --go --meson --node --python --ruby --rust --cask)--perl[Create a basic template for a Perl build]' \
-    '(--autotools --cmake --crystal --go --meson --node --perl --ruby --rust --cask)--python[Create a basic template for a Python build]' \
+    '(--autotools --cmake --crystal --go --meson --perl --python --ruby --rust --zig --cask)--node[Create a basic template for a Node build]' \
+    '(--autotools --cmake --crystal --go --meson --node --python --ruby --rust --zig --cask)--perl[Create a basic template for a Perl build]' \
+    '(--autotools --cmake --crystal --go --meson --node --perl --ruby --rust --zig --cask)--python[Create a basic template for a Python build]' \
     '--quiet[Make some output more quiet]' \
-    '(--autotools --cmake --crystal --go --meson --node --perl --python --rust --cask)--ruby[Create a basic template for a Ruby build]' \
-    '(--autotools --cmake --crystal --go --meson --node --perl --python --ruby --cask)--rust[Create a basic template for a Rust build]' \
+    '(--autotools --cmake --crystal --go --meson --node --perl --python --rust --zig --cask)--ruby[Create a basic template for a Ruby build]' \
+    '(--autotools --cmake --crystal --go --meson --node --perl --python --ruby --zig --cask)--rust[Create a basic template for a Rust build]' \
     '(--cask)--set-license[Explicitly set the license of the new formula]' \
     '--set-name[Explicitly set the name of the new formula or cask]' \
     '--set-version[Explicitly set the version of the new formula or cask]' \
     '--tap[Generate the new formula within the given tap, specified as user`/`repo]' \
-    '--verbose[Make some output more verbose]'
+    '--verbose[Make some output more verbose]' \
+    '(--autotools --cmake --crystal --go --meson --node --perl --python --ruby --rust --cask)--zig[Create a basic template for a Zig build]'
 }
 
 # brew debugger
@@ -978,8 +994,42 @@ _brew_formula() {
     '*::formula:__brew_formulae'
 }
 
+# brew formula-analytics
+_brew_formula_analytics() {
+  _arguments \
+    '(--json --setup)--all-core-formulae-json[Output a different JSON format containing the JSON data for all Homebrew/homebrew-core formulae]' \
+    '(--install --cask-install --install-on-request --build-error --os-version --homebrew-devcmdrun-developer --homebrew-os-arch-ci --homebrew-prefixes --homebrew-versions --brew-command-run-options --brew-test-bot-test)--brew-command-run[Output `brew` commands run]' \
+    '(--install --cask-install --install-on-request --build-error --os-version --homebrew-devcmdrun-developer --homebrew-os-arch-ci --homebrew-prefixes --homebrew-versions --brew-command-run --brew-test-bot-test)--brew-command-run-options[Output `brew` commands run with options]' \
+    '(--install --cask-install --install-on-request --build-error --os-version --homebrew-devcmdrun-developer --homebrew-os-arch-ci --homebrew-prefixes --homebrew-versions --brew-command-run --brew-command-run-options)--brew-test-bot-test[Output `brew test-bot` steps run]' \
+    '(--install --cask-install --install-on-request --os-version --homebrew-devcmdrun-developer --homebrew-os-arch-ci --homebrew-prefixes --homebrew-versions --brew-command-run --brew-command-run-options --brew-test-bot-test)--build-error[Output the number of build errors for the formulae]' \
+    '(--install --install-on-request --build-error --os-version --homebrew-devcmdrun-developer --homebrew-os-arch-ci --homebrew-prefixes --homebrew-versions --brew-command-run --brew-command-run-options --brew-test-bot-test)--cask-install[Output the number of installations of casks]' \
+    '--days-ago[Query from the specified days ago until the present. The default is 30 days]' \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '(--install --cask-install --install-on-request --build-error --os-version --homebrew-os-arch-ci --homebrew-prefixes --homebrew-versions --brew-command-run --brew-command-run-options --brew-test-bot-test)--homebrew-devcmdrun-developer[Output devcmdrun/HOMEBREW_DEVELOPER]' \
+    '(--install --cask-install --install-on-request --build-error --os-version --homebrew-devcmdrun-developer --homebrew-prefixes --homebrew-versions --brew-command-run --brew-command-run-options --brew-test-bot-test)--homebrew-os-arch-ci[Output OS/Architecture/CI]' \
+    '(--install --cask-install --install-on-request --build-error --os-version --homebrew-devcmdrun-developer --homebrew-os-arch-ci --homebrew-versions --brew-command-run --brew-command-run-options --brew-test-bot-test)--homebrew-prefixes[Output Homebrew prefixes]' \
+    '(--install --cask-install --install-on-request --build-error --os-version --homebrew-devcmdrun-developer --homebrew-os-arch-ci --homebrew-prefixes --brew-command-run --brew-command-run-options --brew-test-bot-test)--homebrew-versions[Output Homebrew versions]' \
+    '(--cask-install --install-on-request --build-error --os-version --homebrew-devcmdrun-developer --homebrew-os-arch-ci --homebrew-prefixes --homebrew-versions --brew-command-run --brew-command-run-options --brew-test-bot-test)--install[Output the number of specifically requested installations or installation as dependencies of the formula. This is the default]' \
+    '(--install --cask-install --build-error --os-version --homebrew-devcmdrun-developer --homebrew-os-arch-ci --homebrew-prefixes --homebrew-versions --brew-command-run --brew-command-run-options --brew-test-bot-test)--install-on-request[Output the number of specifically requested installations of the formula]' \
+    '(--all-core-formulae-json --setup)--json[Output JSON. This is required: plain text support has been removed]' \
+    '(--install --cask-install --install-on-request --build-error --homebrew-devcmdrun-developer --homebrew-os-arch-ci --homebrew-prefixes --homebrew-versions --brew-command-run --brew-command-run-options --brew-test-bot-test)--os-version[Output OS versions]' \
+    '--quiet[Make some output more quiet]' \
+    '(--json --all-core-formulae-json)--setup[Install the necessary gems, require them and exit without running a query]' \
+    '--verbose[Make some output more verbose]'
+}
+
 # brew formulae
 _brew_formulae() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
+}
+
+# brew generate-analytics-api
+_brew_generate_analytics_api() {
   _arguments \
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
@@ -1591,12 +1641,12 @@ _brew_pr_upload() {
     '--debug[Display any debugging information]' \
     '--dry-run[Print what would be done rather than doing it]' \
     '--help[Show this message]' \
-    '(--upload-only)--keep-old[If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL]' \
+    '--keep-old[If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL. When using GitHub Packages, this also appends the manifest to the existing list]' \
     '(--upload-only)--no-commit[Do not generate a new commit before uploading]' \
     '--quiet[Make some output more quiet]' \
     '--root-url[Use the specified URL as the root of the bottle'\''s URL instead of Homebrew'\''s default]' \
     '--root-url-using[Use the specified download strategy class for downloading the bottle'\''s URL instead of Homebrew'\''s default]' \
-    '(--keep-old --no-commit)--upload-only[Skip running `brew bottle` before uploading]' \
+    '(--no-commit)--upload-only[Skip running `brew bottle` before uploading]' \
     '--verbose[Make some output more verbose]' \
     '--warn-on-upload-failure[Warn instead of raising an error if the bottle upload fails. Useful for repairing bottle uploads that previously failed]'
 }
@@ -1986,6 +2036,15 @@ _brew_typecheck() {
     '*::tap:__brew_any_tap'
 }
 
+# brew unalias
+_brew_unalias() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
+}
+
 # brew unbottled
 _brew_unbottled() {
   _arguments \
@@ -2137,6 +2196,7 @@ _brew_update_python_resources() {
     '--exclude-packages[Exclude these packages when finding resources]' \
     '--extra-packages[Include these additional packages when finding resources]' \
     '--help[Show this message]' \
+    '--ignore-errors[Record all discovered resources, even those that can'\''t be resolved successfully. This option is ignored for homebrew/core formulae]' \
     '--ignore-non-pypi-packages[Don'\''t fail if formula is not a PyPI package]' \
     '--install-dependencies[Install missing dependencies required to update resources]' \
     '--package-name[Use the specified package-name when finding resources for formula. If no package name is specified, it will be inferred from the formula'\''s stable URL]' \
@@ -2249,7 +2309,7 @@ _brew_uses() {
     '--eval-all[Evaluate all available formulae and casks, whether installed or not, to show their dependents]' \
     '--help[Show this message]' \
     '--include-build[Include formulae that specify formula as a `:build` dependency]' \
-    '--include-implicit[Include formulae that have formula as an implicit dependency to download and unpack source files]' \
+    '--include-implicit[Include formulae that have formula as an implicit dependency for downloading and unpacking source files]' \
     '--include-optional[Include formulae that specify formula as an `:optional` dependency]' \
     '--include-test[Include formulae that specify formula as a `:test` dependency]' \
     '(--all --missing)--installed[Only list formulae and casks that are currently installed]' \
@@ -2281,6 +2341,23 @@ _brew_vendor_install() {
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
+}
+
+# brew verify
+_brew_verify() {
+  _arguments \
+    '(--bottle-tag)--arch[Download for the given CPU architecture.(Pass `all` to download for all architectures.)]' \
+    '(--os --arch)--bottle-tag[Download a bottle for given tag]' \
+    '--debug[Display any debugging information]' \
+    '--deps[Also download dependencies for any listed formula]' \
+    '--force[Remove a previously cached version and re-fetch]' \
+    '--help[Show this message]' \
+    '--json[Return JSON for the attestation data for each bottle]' \
+    '(--bottle-tag)--os[Download for the given operating system.(Pass `all` to download for all operating systems.)]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]' \
+    - formula \
+    '*::formula:__brew_formulae'
 }
 
 # The main completion function
