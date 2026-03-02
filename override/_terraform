@@ -1,4 +1,0 @@
-#compdef terraform
-
-autoload -U +X bashcompinit && bashcompinit
-complete -C $(command -v terraform) terraform
