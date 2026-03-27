@@ -16,7 +16,7 @@
 _arguments \
   '(-b --background)'{-b,--background}'[Background immediately]' \
   '(-c --script)'{-c,--script}'[Use this script instead of the default]: :_files' \
-  '(-D --duid)'{-d,--duid}'[Use a DHCP Unique Identifier]:id' \
+  '(-D --duid)'{-D,--duid}'[Use a DHCP Unique Identifier]:id' \
   '(-d --debug)'{-d,--debug}'[Echo debug messages to the stderr and syslog]' \
   '(-E --lastlease)'{-E,--lastlease}'[If dhcpcd cannot obtain a lease, then try to use the last lease acquired for the interface]' \
   '--lastleaseextend[Same as the -E/--lastlease, but the lease will be retained even if it expires]' \
@@ -48,7 +48,7 @@ _arguments \
   '--waitip=[Wait for an address to assigned before forking to the background]: :(4 6)' \
   \*{-x,--exit}'[This will signal an existing dhcpcd process running on the interface to exit]: :_net_interfaces' \
   '(-y --reboot)'{-y,--reboot}'[Allow reboot seconds before moving to the discover phase if we have an old lease to use]:seconds' \
-   '1:network interface:_net_interfaces'
+  '1:network interface:_net_interfaces'
 
 # Local Variables:
 # mode: Shell-Script
