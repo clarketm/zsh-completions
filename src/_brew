@@ -150,7 +150,7 @@ __brew_internal_commands() {
     'bump-formula-pr:Create a pull request to update formula with a new URL or a new tag'
     'bump-revision:Create a commit to increment the revision of formula'
     'bump-unversioned-casks:Check all casks with unversioned URLs in a given tap for updates'
-    'bundle:Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store, Visual Studio Code (and forks/variants), Go packages, Cargo packages and Flatpak'
+    'bundle:Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store dependencies, VSCode (and forks/variants) extensions, Go packages, Cargo packages, uv tools and Flatpak packages'
     'casks:List all locally installable casks including short names'
     'cat:Display the source of a formula or cask'
     'cleanup:Remove stale lock files and outdated downloads for all formulae and casks, and remove old versions of installed formulae'
@@ -180,6 +180,7 @@ __brew_internal_commands() {
     'generate-cask-ci-matrix:Generate a GitHub Actions matrix for a given pull request URL or list of cask names'
     'generate-formula-api:Generate `homebrew/core` API data files for https://formulae.brew.sh'
     'generate-man-completions:Generate Homebrew'\''s manpages and shell completions'
+    'generate-zap:Generate a `zap` stanza for a cask by scanning the system for associated files and directories'
     'gist-logs:Upload logs for a failed build of formula to a new Gist'
     'help:Outputs the usage instructions for `brew` command'
     'home:Open a formula or cask'\''s homepage in a browser, or open Homebrew'\''s own homepage if no argument is provided'
@@ -669,7 +670,7 @@ _brew_bump_unversioned_casks() {
 # brew bundle
 _brew_bundle() {
   _arguments \
-    '(--no-vscode --no-go --no-cargo --no-flatpak)--all[`list` all dependencies]' \
+    '(--no-vscode --no-go --no-cargo --no-uv --no-flatpak)--all[`list` all dependencies]' \
     '(--no-cargo)--cargo[`list` or `dump` Cargo packages]' \
     '--cask[`list`, `dump` or `cleanup` Homebrew cask dependencies]' \
     '--check[Check that all dependencies in the Brewfile are installed before running `exec`, `sh`, or `env`. Enabled by default if `$HOMEBREW_BUNDLE_CHECK` is set]' \
@@ -677,7 +678,7 @@ _brew_bundle() {
     '--debug[Display any debugging information]' \
     '--describe[`dump` adds a description comment above each line, unless the dependency does not have a description. Enabled by default if `$HOMEBREW_BUNDLE_DUMP_DESCRIBE` is set]' \
     '(--global)--file[Read from or write to the `Brewfile` from this location. Use `--file=-` to pipe to stdin/stdout]' \
-    '(--no-flatpak)--flatpak[`list` or `dump` Flatpak packages. Note: Linux only]' \
+    '(--no-flatpak)--flatpak[`list`, `dump` or `cleanup` Flatpak packages. Note: Linux only]' \
     '--force[`install` runs with `--force`/`--overwrite`. `dump` overwrites an existing `Brewfile`. `cleanup` actually performs its cleanup operations]' \
     '--formula[`list`, `dump` or `cleanup` Homebrew formula dependencies]' \
     '(--file)--global[Read from or write to the `Brewfile` from `$HOMEBREW_BUNDLE_FILE_GLOBAL` (if set), `${XDG_CONFIG_HOME}/homebrew/Brewfile` (if `$XDG_CONFIG_HOME` is set), `~/.homebrew/Brewfile` or `~/.Brewfile` otherwise]' \
@@ -691,12 +692,14 @@ _brew_bundle() {
     '--no-restart[`dump` does not add `restart_service` to formula lines]' \
     '--no-secrets[Attempt to remove secrets from the environment before `exec`, `sh`, or `env`. Enabled by default if `$HOMEBREW_BUNDLE_NO_SECRETS` is set]' \
     '--no-upgrade[`install` does not run `brew upgrade` on outdated dependencies. `check` does not check for outdated dependencies. Note they may still be upgraded by `brew install` if needed. Enabled by default if `$HOMEBREW_BUNDLE_NO_UPGRADE` is set]' \
+    '(--all --uv)--no-uv[`dump` without uv tools. Enabled by default if `$HOMEBREW_BUNDLE_DUMP_NO_UV` is set]' \
     '(--all --vscode)--no-vscode[`dump` without VSCode (and forks/variants) extensions. Enabled by default if `$HOMEBREW_BUNDLE_DUMP_NO_VSCODE` is set]' \
     '--quiet[Make some output more quiet]' \
     '--services[Temporarily start services while running the `exec` or `sh` command. Enabled by default if `$HOMEBREW_BUNDLE_SERVICES` is set]' \
     '--tap[`list`, `dump` or `cleanup` Homebrew tap dependencies]' \
     '(--install)--upgrade[`install` runs `brew upgrade` on outdated dependencies, even if `$HOMEBREW_BUNDLE_NO_UPGRADE` is set]' \
     '--upgrade-formulae[`install` runs `brew upgrade` on any of these comma-separated formulae, even if `$HOMEBREW_BUNDLE_NO_UPGRADE` is set]' \
+    '(--no-uv)--uv[`list` or `dump` uv tools]' \
     '--verbose[`install` prints output from commands as they are run. `check` lists all missing dependencies]' \
     '(--no-vscode)--vscode[`list`, `dump` or `cleanup` VSCode (and forks/variants) extensions]' \
     '--zap[`cleanup` casks using the `zap` command instead of `uninstall`]' \
@@ -1156,6 +1159,16 @@ _brew_generate_man_completions() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--no-exit-code[Exit with code 0 even if no changes were made]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
+}
+
+# brew generate-zap
+_brew_generate_zap() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '--name[Treat the argument as a raw application name instead of a cask token]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]'
 }
@@ -2023,6 +2036,7 @@ _brew_style() {
     '(--except-cops)--only-cops[Specify a comma-separated cops list to check for violations of only the listed RuboCop cops]' \
     '--quiet[Make some output more quiet]' \
     '--reset-cache[Reset the RuboCop cache]' \
+    '--todo[Add `rubocop:todo` comments for RuboCop violations that remain after auto-correction. Requires `--fix`]' \
     '--verbose[Make some output more verbose]' \
     - file \
     '*:file:__brew_formulae_or_ruby_files' \
