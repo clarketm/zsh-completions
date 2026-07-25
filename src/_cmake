@@ -28,7 +28,7 @@
 # Description
 # -----------
 #
-#  Completion script for CMake 4.3.0 (https://cmake.org).
+#  Completion script for CMake 4.4.0 (https://cmake.org).
 #
 # -------------------------------------------------------------------------
 # Authors
@@ -75,6 +75,7 @@ local -a cmake_build_options=(
   '(-Werror=deprecated)-Wno-error=deprecated[Make deprecated macro and function warnings (not) errors]'
 
   '--preset=[Specify a configure preset]:preset:_cmake_presets'
+  '--presets-file=[Specify the path to a presets file]:file:_files'
   '--list-presets[List available presets]'
   '--workflow[Run a workflow preset]'
 
@@ -707,13 +708,17 @@ _cmake_launchers() {
 (( $+functions[_cmake_commands] )) ||
 _cmake_commands() {
   local -a commands=(
+    'bin2c:Turn a binary file into a C array'
     'capabilities:Report capabilities built into cmake in JSON format'
     'cat:concat the files and print them to the standard output'
     'chdir:run command in a given directory'
     'compare_files:check if file1 is same as file2'
     'copy:copy files to destination (either file or directory)'
     'copy_directory:copy content of <dir>... directories to destination directory'
+    'copy_directory_if_different:copy changed content of <dir>... directories to destination directory'
+    'copy_directory_if_newer:copy newer content of <dir>... directories to destination directory'
     'copy_if_different:copy files if it has changed'
+    'copy_if_newer:copy files if source is newer than destination'
     'echo:displays arguments as text'
     'echo_append:displays arguments as text but no new line'
     'env:run command in a modified environment'
