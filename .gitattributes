@@ -1,0 +1,8 @@
+### Standard paths ###
+/src/_*      linguist-language=zsh
+/override/_* linguist-language=zsh
+
+### Submodules ###
+/nilsonholger_zsh-completions/_*  linguist-language=zsh
+/zchee_zsh-completions/src/*/_* linguist-language=zsh
+/zsh-users_zsh-completions/src/_* linguist-language=zsh
